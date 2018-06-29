@@ -2,7 +2,7 @@
 
 ## Abstract
 
-Property based testing is an unreasonably effective technique for finding bugs and providing minimal test cases to reproduce those bugs. It achieves this by randomly generating inputs, providing those inputs to the software under test, and ensuring that the outputs uphold some desirable properties. Property based _state machine_ testing extends this technique to more easily test stateful software, using state machines to model the application's state while ensuring that the model and application continue to agree.
+Property based testing is an unreasonably effective technique for finding bugs and providing minimal test cases to reproduce those bugs. It achieves this by randomly generating inputs, providing those inputs to the software under test, and ensuring that the outputs uphold some desirable properties. Property based _state machine_ testing extends this technique to more easily test stateful software, using state machines to model the application while ensuring that the model and application continue to agree.
 
 The Haskell library `hedgehog` provides excellent support for both of these styles of testing. Although `hedgehog` is a Haskell library, its usefulness is by no means limited to testing Haskell code. In fact, coupled with some other libraries and tools, it can be used to great effect when testing any software. Even something like... WordPress.
 

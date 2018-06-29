@@ -2,7 +2,9 @@
 
 ## Abstract
 
-Property based state machine testing is an unreasonably effective technique for finding bugs and providing minimal test cases to reproduce those bugs. The Haskell library `hedgehog` provides excellent support for this style of testing. Although `hedgehog` is a Haskell library, its usefulness is by no means limited to testing Haskell code. In fact, coupled with some other libraries and tools, it can be used to great effect when testing any software. Even something like... WordPress.
+Property based testing is an unreasonably effective technique for finding bugs and providing minimal test cases to reproduce those bugs. It achieves this by randomly generating inputs, providing those inputs to the software under test, and ensuring that the outputs uphold some desirable properties. Property based _state machine_ testing extends this technique to more easily test stateful software, using state machines to model the application's state while ensuring that the model and application continue to agree.
+
+The Haskell library `hedgehog` provides excellent support for both of these styles of testing. Although `hedgehog` is a Haskell library, its usefulness is by no means limited to testing Haskell code. In fact, coupled with some other libraries and tools, it can be used to great effect when testing any software. Even something like... WordPress.
 
 WordPress, for anyone who hasn't investigated setting up a blog in the last 15 years, is a blogging platform implemented using PHP and MySQL. WordPress is not written in Haskell or anything resembling a functional programming language, its REST API is under specified, and it makes extensive use of JSON objects with fields that may or may not appear depending on the context in which the object is used. At first this might not appear to be a good candidate for testing with a typed, functional language. Appearances can be deceiving. Haskell and its ecosystem are well equipped to tackle this problem, bringing with them all of their usual benefits. You don't have to take my word for it either -- I've written the code.
 

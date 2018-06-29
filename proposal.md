@@ -1,18 +1,20 @@
-# Props for WordPress
+# Mad props for WordPress
 
 ## Abstract
 
-Property based state machine testing is an unreasonably effective technique for finding bugs and providing minimal test cases to reproduce those bugs. The Haskell library `hedgehog` provides excellent support for this style of testing. Although `hedgehog` is a Haskell library, it is by no means limited to testing Haskell code. In fact, coupled with some other libraries and tools, it can be used to great effect when testing almost any software. You don't have to take my word for it though. In this talk I will provide a tour of the tools and techniques I've actually used to test some decidedly not-functional software: WordPress.
+Property based state machine testing is an unreasonably effective technique for finding bugs and providing minimal test cases to reproduce those bugs. The Haskell library `hedgehog` provides excellent support for this style of testing. Although `hedgehog` is a Haskell library, its usefulness is by no means limited to testing Haskell code. In fact, coupled with some other libraries and tools, it can be used to great effect when testing any software. Even something like... WordPress.
 
-WordPress, for anyone who didn't setup a blog in the 2000s, is a blogging platform implemented using PHP and MySQL. It's REST API is under specified and makes extensive use of the dynamic nature of JSON -- with fields in each object appearing and disappearing across request types. At first this might not appear to be a good fit for a decidedly typed, functional language. Appearances can be deceiving. Haskell's rich ecosystem provides us the tools to express this complexity without tying ourselves in knots:
+WordPress, for anyone who didn't setup a blog in the 2000s, is a blogging platform implemented using PHP and MySQL. WordPress is not written in Haskell or anything resembling a functional programming language, it's REST API is under specified, and it makes extensive use of JSON objects with fields that may or may not appear depending on the context in which the object is used. At first this might not appear to be a good candidate for testing with a typed, functional language. Appearances can be deceiving. Haskell and its ecosystem are well equipped to tackle this problem, bringing with them all of their usual benefits. You don't have to take my word for it either -- I've written the code.
+
+In this talk I will provide a tour of the tools and techniques I've employed to test WordPress. The main players are:
 
  - `hedgehog` to perform state machine testing, including concurrency tests.
  - `servant` to generate client request functions given a specification of the REST API.
- - `dependent-map` to model the highly dynamic JSON objects.
+ - `dependent-map` to model the dynamic JSON objects.
  
-The final ingredient in this functional, testing cocktail is Nix. I will briefly show how NixOps and Nixpkgs provide a means to declaratively specify a test environment and deploy it to a virtual machine to run our tests.
+The final ingredient in this functional, testing cocktail is Nix. I will briefly show how NixOps and Nixpkgs provide a means to specify a test environment in a succinct and declarative manner, and then deploy that specification to a virtual machine for testing.
 
-Attendees should leave the talk with a high-level understanding of state machine testing, as well as the tools and techniques that can be employed to test complex APIs not written in Haskell.
+Attendees should leave the talk with a high-level understanding of state machine testing and the tools and techniques that can be employed to test complex APIs not written in Haskell. All source code will be made publicly available under an open source licence after the talk.
 
 ## Bio
 

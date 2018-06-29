@@ -4,11 +4,15 @@
 
 Property based state machine testing is an unreasonably effective technique for finding bugs and providing minimal test cases to reproduce those bugs. The Haskell library `hedgehog` provides excellent support for this style of testing. While `hedgehog` is a Haskell library, it is by no means limited to testing Haskell code. In fact, coupled with some other libraries and tools, it can be used to great effect when testing almost any software. You don't have to take my word for it though. In this talk I will provide a tour of the tools and techniques I've actually used to test some decidedly not-functional software: WordPress.
 
-WordPress, for anyone who didn't setup a blog in the 2000s, is a blogging platform implemented using PHP and MySQL. It's REST API is under specified and makes extensive use of the dynamic nature of JSON -- with fields in each object appearing and disappearing across request types. At first this might not appear to be a good fit for decidedly typed, functional language. Appearances can be deceiving. Haskell's rich ecosystem gives us:
+WordPress, for anyone who didn't setup a blog in the 2000s, is a blogging platform implemented using PHP and MySQL. It's REST API is under specified and makes extensive use of the dynamic nature of JSON -- with fields in each object appearing and disappearing across request types. At first this might not appear to be a good fit for a decidedly typed, functional language. Appearances can be deceiving. Haskell's rich ecosystem provides us the tools to express this complexity without tying ourselves in knots:
 
  - `hedgehog` to perform state machine testing, including concurrency tests.
  - `servant` to generate client request functions given a specification of the REST API.
  - `dependent-map` to model the highly dynamic JSON objects.
+ 
+The final ingredient in this functional, testing cocktail is Nix. I will briefly show how NixOps and Nixpkgs provide a means to declaratively specify a test environment and deploy it to a virtual machine to run our tests.
+
+Attendees should leave the talk with a high-level understanding of state machine testing, as well as the tools and techniques that can be employed to test complex APIs not written in Haskell.
 
 ## Bio
 

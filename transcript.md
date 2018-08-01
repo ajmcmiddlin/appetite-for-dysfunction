@@ -73,7 +73,26 @@ follow up in response to questions I received after that talk. Most notably: is 
 hedgehog to test software _not_ written in Haskell. The answer to this question is that it most
 definitely can, and to really prove the point, I decided to test WordPress.
 
-## 
+## WordPress
 
+This is what WordPress say about themselves.
 
+> WordPress is open source software you can use to create a beautiful website, blog, or app.
+
+> WordPress is both free and priceless at the same time.
+
+> 31% of the web uses WordPress, from hobby blogs to the biggest news sites online.
+
+> Over 60 million people have chosen WordPress to power the place on the web they call “home” — join the family.
+
+In short, WordPress is blogging, or web content management software. Given its prevalence, I'm
+guessing most people here have at least heard of it. I actually have a couple of old WordPress blogs
+lying around, and my assessment of WordPress isn't quite as positive as their marketing material's.
+Let's just say that I will be very glad to find the time and move them to Hakyll.
+
+WordPress was started in 2003 as a fork from another project called b2 that was started in 2001. It
+is currently 2018, which means that, including its time as b2, the project has been active for about
+17 years. It's written in PHP and MySQL, and has a large number of plugins and themes available for
+it. Given it's history and technical foundations, it's not surprising that WordPress isn't the most
+robust software, however I still find it surprising that it functions as well as it does
 

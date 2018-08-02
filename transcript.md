@@ -93,6 +93,112 @@ Let's just say that I will be very glad to find the time and move them to Hakyll
 WordPress was started in 2003 as a fork from another project called b2 that was started in 2001. It
 is currently 2018, which means that, including its time as b2, the project has been active for about
 17 years. It's written in PHP and MySQL, and has a large number of plugins and themes available for
-it. Given it's history and technical foundations, it's not surprising that WordPress isn't the most
-robust software, however I still find it surprising that it functions as well as it does
+it. Given it's history and technical foundations, you might think that WordPress isn't the most
+robust or easy to modify software, and if you did, I would say you are right. To be fair though, I
+still find it surprising that it functions as well as it does.
 
+## Let there be... WordPress
+
+Step zero of testing existing software is being able to run the software. You might not think this
+would make for interesting content in a talk about functional programming, but in this case it does.
+To deploy a test environment for WordPress, I used NixOps. NixOps is the devops spinoff from Nix,
+and Nix is a purely functional package manager. As a result, I have a referentially transparent
+expression representing everything I need to setup a working WordPress installation. It gets even
+better. Nix has a huge library of expressions for all sorts of software, including WordPress, which
+means that I had to do very little work. Here's the code in its entirety.
+
+```
+{
+network.description = "Wordpress";
+
+wordpress =
+  { config, pkgs, ... }:
+  let
+    wpPackage = pkgs.fetchFromGitHub {
+      owner = "WordPress";
+      repo = "WordPress";
+      rev = "4.9.7";
+      sha256 = "1kxwk7mqhi9n334i6yb9iyi9vbl07agbbv5fzfhrcx5d2v13h48r";
+    };
+
+    basicAuthPlugin = pkgs.stdenv.mkDerivation {
+      name = "basic-auth-plugin";
+      # Download the theme from the wordpress site
+      src = pkgs.fetchurl {
+        url = https://github.com/WP-API/Basic-Auth/archive/9e9d5267c7805c024f141d115b224cdee5a10008.zip;
+        sha256 = "b7f4fe0e6064040eeec2d34c27296cc69c92ed015c8d4164cf86af002fde2ddd";
+      };
+      # We need unzip to build this package
+      buildInputs = [ pkgs.unzip ];
+      # Installing simply means copying all files to the output directory
+      installPhase = "mkdir -p $out; cp -R * $out/";
+    };
+
+    twentySeventeen = pkgs.stdenv.mkDerivation {
+      name = "theme-twenty-seventeen";
+      # Download the theme from the wordpress site
+      src = pkgs.fetchurl {
+        url = https://downloads.wordpress.org/theme/twentyseventeen.1.6.zip;
+        sha256 = "0cch9bvap4r0775f055mynbf0d6k8zrqyn2mdwkbn6rr12hn526b";
+      };
+      # We need unzip to build this package
+      buildInputs = [ pkgs.unzip ];
+      # Installing simply means copying all files to the output directory
+      installPhase = "mkdir -p $out; cp -R * $out/";
+    };
+  in
+  {
+    services.mysql = {
+      enable = true;
+      package = pkgs.mysql;
+      initialScript = ./init.sql;
+    };
+
+    services.httpd = {
+      enable = true;
+      logPerVirtualHost = true;
+      adminAddr="andrew@qfpl.io";
+      extraModules = [
+        { name = "php7"; path = "${pkgs.php}/modules/libphp7.so"; }
+      ];
+
+      virtualHosts = [
+        {
+          hostName = "wordpress";
+          extraSubservices =
+            [
+              {
+                serviceType = "wordpress";
+                dbPassword = "wordpress";
+                wordpressUploads = "/data/uploads";
+                languages = [ "en_GB" ];
+                package = wpPackage;
+                plugins = [ basicAuthPlugin ];
+                themes = [ twentySeventeen ];
+              }
+            ];
+        }
+      ];
+    };
+
+    # HTTP, HTTPS, MySQL
+    networking.firewall.allowedTCPPorts = [ 80 443 3306 ];
+  };
+}
+```
+
+Now that I've specified the WordPress environment, I need to describe how to deploy it. For my local
+tests, I'm using VirtualBox, which is supported out of the box by NixOps, such that I don't need to
+specify much.
+
+```
+{
+  wordpress =
+    { config, pkgs, ... }:
+    { deployment.targetEnv = "virtualbox";
+      deployment.virtualbox.memorySize = 4096; # megabytes
+      deployment.virtualbox.vcpu = 4; # number of cpus
+      deployment.virtualbox.headless = true;
+    };
+}
+```

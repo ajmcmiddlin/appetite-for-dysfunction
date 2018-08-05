@@ -7,6 +7,12 @@ title: Appetite for dysfunction transcript
 Hi, my name is Andrew McMiddlin. I'm the programmer formerly known as Andrew McCluskey, and I work
 at Data61's Queensland Functional Programming Lab.
 
+A heads up before we begin. This talk is not a deep dive into state machine testing. It's more of an
+experience report and high level overview of some functional programming tools and techniques that I
+found helpful while doing state machine testing. So don't freak out if you don't come away with a
+deep understanding of these topics. My goal is to just make you aware of these techniques and give
+you a sense of how they can be used.
+
 Today I'm going to tell you all about how I used functional programming tools to test WordPress;
 the blogging and content management system built on PHP and MySQL. Before I get into that though, I
 want to give you all a little context on how and why I got here.
@@ -207,12 +213,102 @@ specify much.
 }
 ```
 
-With my specifications in place, I can use a couple of commands to deploy the test environment.
+Once my specifications are in place I can deploy the environment for testing.
 
 ```
-$ nixops create wp.nix wp-vbox.nix -d wp
-$ nixops deploy -d wp 
+$ nixops create ./wp.nix ./wp-vbox.nix -d wp
+$ nixops deploy -d wp
 ```
 
-I now have a test environment running WordPress.
+The output from the deployment tells me the IP address, but I can also find it with the following.
+
+```
+$ nixops info -d wp
+```
+
+## The API
+
+Now that we have a deployment of WordPress to test, let's investigate the API. Rather than trying to
+drive the tests through a browser, we're going to use WordpPress's REST API. There is some
+documentation for the API, however it doesn't help much beyond telling you the endpoints and most of
+the top level fields in each object. Other than that, it's what you would expect: different
+endpoints for different resources, HTTP methods driving the actions taken, and JSON for the
+interchange format.
+
+## Options, options everywhere
+
+One particular challenge this API presents when using Haskell is that many of the fields in its API
+are optional and often don't appear in the JSON at all. For example, a post object has 24 fields,
+but can be created with only one field present in the JSON.
+
+The first solution that probably comes to mind is to use a record and make every optional field a
+`Maybe`. This is certainly an option, however it gets cumbersome pretty quickly. The issue with this
+solution is that you're often dealing with only a few fields, but must specify and account for all
+of them at all times.
+
+Just before I encountered this problem, a couple of my colleagues were spruiking dependent maps for
+dealing with dynamic JSON objects. This problem seemed like a good fit, so I gave it a go, and am
+reasonably happy with the results.
+
+## `dependent-map`
+
+`dependent-map` is a Haskell package that provides a dependently typed map with a fixed set of keys.
+It's somewhere between a record and `Data.Map`. Like a record, the set of keys is fixed and known
+ahead of time, and the type of each value corresponds with, or depends on, the key. However, unlike
+a record and more like `Data.Map`, the map does not contain a value for every key. It may contain
+any number of key-value pairs.
+
+Let's take a look at an example. First, we define our key type. This specifies each key-value, as
+well as the type of its corresponding value. Here we have 3 keys (`PostTitle`, `PostId`, and
+`PostStatus`). Each of them maps to values of type `Text`, `Int`, and `Status` respectively.
+
+```haskell
+data PostKey a where
+  PostTitle  :: PostKey Text
+  PostId     :: PostKey Int
+  PostStatus :: PostKey Status
+```
+
+As is common for map types, we need a way to compare and order keys. However, the standard `Ord`
+type class won't cut it, because it compares things of the same type.
+
+```haskell
+class Eq a => Ord a where
+  compare :: a -> a -> Ordering
+  ...
+```
+
+In our case, we have a dependently typed parameter that may change for each key. Therefore if we
+want to be able to compare every possible key, we need something like this, which allows us to
+compare two values that share a type constructor but not necessarily a type:
+
+```haskell
+class GEq f => GCompare (f :: k -> *) where
+  gcompare :: f a -> f b -> GOrdering a b 
+```
+
+Writing these instances by hand would be cumbersome, so thankfully the `dependent-sum-template`
+package provides some template Haskell to produce them for us.
+
+```haskell
+deriveGEq ''PostKey
+deriveGCompare ''PostKey
+```
+
+Now that we have a key type and the necessary instances for it, we can create a map using `fromList`
+or `insert` values into `empty`. You'll notice that our map type takes a type constructor --- in
+this case `Identity` --- as an argument. This type constructor wraps each value stored in the map.
+
+```haskell
+(==>) :: Applicative f => tag a -> a -> DSum tag f
+
+aPost, aPost' :: DMap PostKey Identity
+
+aPost =
+  fromList [PostTitle ==> "Hello Compose", PostStatus ==> Publish]
+
+aPost' =
+  insert PostTitle (Identity "Hello again") empty
+```
+>>>>>>> e112c28aab62ee357f85c6ecc36773513488e816
 

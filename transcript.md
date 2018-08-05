@@ -43,19 +43,19 @@ property.
 Property based testing is a very powerful technique, as our tests are no longer limited to the
 examples that we can think of and can be bothered writing. We can now express our tests in terms of
 every possible value our function might get, and let a machine execute as many cases as we can be
-bothered waiting for. It also forces us to think about the software we're writing in a more abstract
-sense, rather than focusing on specific examples.
+bothered waiting for. It also forces us to think about the software we're writing in terms of every
+possible scenario, rather than focusing on specific examples.
 
 ## State machine testing
 
 While very powerful, and very well suited to testing referentially transparent functions, property
 based testing in this form is less well equipped to test the higher level properties of stateful
 systems. We might write our web application as a referentially transparent expression, but there are
-a whole slew of properties that involve the system's state and interactions with the outside world.
-Just as Claessen and Hughes brought property based testing to Haskell in 2000 with QuickCheck, they
-then went on to deliver a solution to this problem in their 2002 paper on monadic QuickCheck. Again
-following in QuickCheck's footsteps, `hedgehog` has an implementation of property based state
-machine testing that greatly simplifies testing stateful software.
+a whole slew of properties that involve the system's state and interactions with the outside world
+when the software is running. Just as Claessen and Hughes brought property based testing to Haskell
+in 2000 with QuickCheck, they then went on to deliver a solution to this problem in their 2002 paper
+on monadic QuickCheck. Again following in QuickCheck's footsteps, `hedgehog` has an implementation
+of property based state machine testing that greatly simplifies testing stateful software.
 
 In short, this approach comprises the following steps:
 
@@ -71,7 +71,10 @@ testing and how to do it in `hedgehog`. In the talk I covered how `hedgehog`'s s
 facilities work, and provided examples that test part of a Haskell application. This talk is a
 follow up in response to questions I received after that talk. Most notably: is it possible to use
 hedgehog to test software _not_ written in Haskell. The answer to this question is that it most
-definitely can, and to really prove the point, I decided to test WordPress.
+definitely can, and to really prove the point, I decided to test WordPress. Using state machine
+testing with WordPress uncovered a few interesting challenges that I didn't encounter testing a
+Haskell application, so really the focus of this talk is the tools and techniques I used to test
+WordPress and not so much the details of the tests.
 
 ## WordPress
 
@@ -88,7 +91,7 @@ This is what WordPress say about themselves.
 In short, WordPress is blogging, or web content management software. Given its prevalence, I'm
 guessing most people here have at least heard of it. I actually have a couple of old WordPress blogs
 lying around, and my assessment of WordPress isn't quite as positive as their marketing material's.
-Let's just say that I will be very glad to find the time and move them to Hakyll.
+Let's just say that I will be very glad to find the time to move them to Hakyll.
 
 WordPress was started in 2003 as a fork from another project called b2 that was started in 2001. It
 is currently 2018, which means that, including its time as b2, the project has been active for about
@@ -99,15 +102,16 @@ still find it surprising that it functions as well as it does.
 
 ## Let there be... WordPress
 
-Step zero of testing existing software is being able to run the software. You might not think this
-would make for interesting content in a talk about functional programming, but in this case it does.
-To deploy a test environment for WordPress, I used NixOps. NixOps is the devops spinoff from Nix,
-and Nix is a purely functional package manager. As a result, I have a referentially transparent
-expression representing everything I need to setup a working WordPress installation. It gets even
-better. Nix has a huge library of expressions for all sorts of software, including WordPress, which
-means that I had to do very little work. Here's the code in its entirety.
+Step zero of testing existing software is being able to run the software. Being a paid up member of
+the Church of Lambda, I'd like my deployments to be referentially transparent too please. To achieve
+this goal I used NixOps. NixOps is the devops spinoff from Nix, where Nix is a purely functional
+package manager that uses referentially transparent expressions to build software. As a result, I
+have a referentially transparent expression representing everything I need to setup a working
+WordPress installation. It gets even better. Nix has a huge library of expressions for all sorts of
+software, including WordPress and its dependencies, which means that I had to do very little work.
+Here's the code in its entirety.
 
-```
+```nix
 {
 network.description = "Wordpress";
 
@@ -191,7 +195,7 @@ Now that I've specified the WordPress environment, I need to describe how to dep
 tests, I'm using VirtualBox, which is supported out of the box by NixOps, such that I don't need to
 specify much.
 
-```
+```nix
 {
   wordpress =
     { config, pkgs, ... }:
@@ -202,3 +206,13 @@ specify much.
     };
 }
 ```
+
+With my specifications in place, I can use a couple of commands to deploy the test environment.
+
+```
+$ nixops create wp.nix wp-vbox.nix -d wp
+$ nixops deploy -d wp 
+```
+
+I now have a test environment running WordPress.
+

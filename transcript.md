@@ -226,29 +226,41 @@ The output from the deployment tells me the IP address, but I can also find it w
 $ nixops info -d wp
 ```
 
+I can also SSH into the machine if necessary like so, where `wordpress` is the name of the machine
+in the deployment that I want to SSH into. There might be multiple machines in a deployment, so
+specifying the machine is necessary.
+
+```
+$ nixops ssh -d wp wordpress
+```
+
 ## The API
 
 Now that we have a deployment of WordPress to test, let's investigate the API. Rather than trying to
 drive the tests through a browser, we're going to use WordpPress's REST API. There is some
 documentation for the API, however it doesn't help much beyond telling you the endpoints and most of
 the top level fields in each object. Other than that, it's what you would expect: different
-endpoints for different resources, HTTP methods driving the actions taken, and JSON for the
-interchange format.
+endpoints for different resources, HTTP methods determining the actions taken on a resource, and
+JSON for the interchange format.
 
 ## Options, options everywhere
 
 One particular challenge this API presents when using Haskell is that many of the fields in its API
 are optional and often don't appear in the JSON at all. For example, a post object has 24 fields,
-but can be created with only one field present in the JSON.
+but can be created with only one field present in the JSON. In a unityped language like PHP, this
+isn't really a cumbersome, because you have so few guarantees about the shape of your data. In a
+well-typed language like Haskell, this presents a bit of a design challenge.
 
 The first solution that probably comes to mind is to use a record and make every optional field a
 `Maybe`. This is certainly an option, however it gets cumbersome pretty quickly. The issue with this
-solution is that you're often dealing with only a few fields, but must specify and account for all
-of them at all times.
+solution is that you're often dealing with only a few fields, but must account for all of them at
+all times --- even if it's just setting them all to `Nothing`.
 
-Just before I encountered this problem, a couple of my colleagues were spruiking dependent maps for
-dealing with dynamic JSON objects. This problem seemed like a good fit, so I gave it a go, and am
-reasonably happy with the results.
+There's a less obvious solution to this problem --- use dependent types to embrace the dynamic
+nature of the problem. Just before I encountered this problem, a couple of my colleagues were
+spruiking dependent maps for dealing with dynamic JSON objects. Dependent maps give us the best of
+both worlds. We maintain the type safety we require, while having a more flexible structure for our
+data that fits the problem well.
 
 ## `dependent-map`
 

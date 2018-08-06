@@ -245,34 +245,179 @@ JSON for the interchange format.
 
 ## Options, options everywhere
 
-One particular challenge this API presents when using Haskell is that many of the fields in its API
-are optional and often don't appear in the JSON at all. For example, a post object has 24 fields,
-but can be created with only one field present in the JSON. In a unityped language like PHP, this
-isn't really a cumbersome, because you have so few guarantees about the shape of your data. In a
-well-typed language like Haskell, this presents a bit of a design challenge.
+Here's an example of the JSON used to create a post.
+
+```json
+{
+  "date": "1900-01-01T12:00:00",
+  "date_gmt": "1900-01-01T12:00:00",
+  "modified": "1900-01-01T12:00:00",
+  "modified_gmt": "1900-01-01T12:00:00",
+  "password": "",
+  "slug": "a",
+  "status": "publish",
+  "type": "post",
+  "link": "http://192.168.56.101/1900/01/01/a/",
+  "title": "foo",
+  "content": "bar",
+  "excerpt": "baz",
+  "author": 1,
+  "featured_media": 0,
+  "comment_status": "open",
+  "ping_status": "open",
+  "sticky": false,
+  "template": "",
+  "format": "standard",
+  "meta": [],
+  "categories": [],
+  "tags": []
+}
+```
+
+Here's another example.
+
+```json
+{
+  "title": "A post"
+}
+```
+
+Here's an example of a post returned after creation.
+
+```json
+{
+  "id": 14,
+  "date": "2018-08-06T00:49:37",
+  "date_gmt": "2018-08-06T00:49:37",
+  "guid": {
+    "rendered": "http://192.168.56.101/?p=14",
+    "raw": "http://192.168.56.101/?p=14"
+  },
+  "modified": "2018-08-06T00:49:37",
+  "modified_gmt": "2018-08-06T00:49:37",
+  "password": "",
+  "slug": "",
+  "status": "draft",
+  "type": "post",
+  "link": "http://192.168.56.101/?p=14",
+  "title": {
+    "raw": "A post",
+    "rendered": "A post"
+  },
+  "content": {
+    "raw": "",
+    "rendered": "",
+    "protected": false
+  },
+  "excerpt": {
+    "raw": "",
+    "rendered": "",
+    "protected": false
+  },
+  "author": 1,
+  "featured_media": 0,
+  "comment_status": "open",
+  "ping_status": "open",
+  "sticky": false,
+  "template": "",
+  "format": "standard",
+  "meta": [],
+  "categories": [],
+  "tags": [],
+  "_links": {
+    "self": [
+      {
+        "href": "http://192.168.56.101/wp-json/wp/v2/posts/14"
+      }
+    ],
+    "collection": [
+      {
+        "href": "http://192.168.56.101/wp-json/wp/v2/posts"
+      }
+    ],
+    "about": [
+      {
+        "href": "http://192.168.56.101/wp-json/wp/v2/types/post"
+      }
+    ],
+    "author": [
+      {
+        "embeddable": true,
+        "href": "http://192.168.56.101/wp-json/wp/v2/users/1"
+      }
+    ],
+    "replies": [
+      {
+        "embeddable": true,
+        "href": "http://192.168.56.101/wp-json/wp/v2/comments?post=14"
+      }
+    ],
+    "version-history": [
+      {
+        "href": "http://192.168.56.101/wp-json/wp/v2/posts/14/revisions"
+      }
+    ],
+    "wp:attachment": [
+      {
+        "href": "http://192.168.56.101/wp-json/wp/v2/media?parent=14"
+      }
+    ],
+    "wp:term": [
+      {
+        "taxonomy": "category",
+        "embeddable": true,
+        "href": "http://192.168.56.101/wp-json/wp/v2/categories?post=14"
+      },
+      {
+        "taxonomy": "post_tag",
+        "embeddable": true,
+        "href": "http://192.168.56.101/wp-json/wp/v2/tags?post=14"
+      }
+    ],
+    "curies": [
+      {
+        "name": "wp",
+        "href": "https://api.w.org/{rel}",
+        "templated": true
+      }
+    ]
+  }
+}
+```
+
+Obviously there's a broad range of acceptable JSON formats for a post. Almost every field is
+optional such that it doesn't appear at all. Given WordPress's use of PHP and Javascript, the
+dynamic nature of its data isn't a surprise, but it does make things a little more interesting when
+dealing with them from Haskell.
 
 The first solution that probably comes to mind is to use a record and make every optional field a
 `Maybe`. This is certainly an option, however it gets cumbersome pretty quickly. The issue with this
 solution is that you're often dealing with only a few fields, but must account for all of them at
 all times --- even if it's just setting them all to `Nothing`.
 
-There's a less obvious solution to this problem --- use dependent types to embrace the dynamic
-nature of the problem. Just before I encountered this problem, a couple of my colleagues were
-spruiking dependent maps for dealing with dynamic JSON objects. Dependent maps give us the best of
-both worlds. We maintain the type safety we require, while having a more flexible structure for our
-data that fits the problem well.
+Building on this idea, one might decide to use multiple post types, probably with a sprinkling of
+language extensions to avoid some of the boilerplate of moving between them. However, without types
+or a well specified API, and given all the possible combinations, this didn't seem like it would be
+fun. I'd essentially have to define the type via trial and error with a slow feedback loop.
+
+Luckily, there's a better option. Just before I encountered this problem, a couple of my colleagues
+were spruiking dependent maps for dealing with dynamic JSON objects, so I decided to give them a go.
+As we'll see, they provide a good trade-off for this problem. We maintain the type safety that is a
+hard requirement for me, while having a more flexible structure for our data that fits the problem
+well.
 
 ## `dependent-map`
 
-`dependent-map` is a Haskell package that provides a dependently typed map with a fixed set of keys.
-It's somewhere between a record and `Data.Map`. Like a record, the set of keys is fixed and known
-ahead of time, and the type of each value corresponds with, or depends on, the key. However, unlike
-a record and more like `Data.Map`, the map does not contain a value for every key. It may contain
-any number of key-value pairs.
+`dependent-map` is a Haskell package that provides a map data structure where each value's type is
+dependent on the key's value. It's somewhere between a record and `Data.Map`. Like a record, the set
+of keys is fixed and known ahead of time, and the type of each value corresponds to the key's name.
+However, unlike a record and more like `Data.Map`, the map may contain zero or more of the keys.
 
-Let's take a look at an example. First, we define our key type. This specifies each key-value, as
-well as the type of its corresponding value. Here we have 3 keys (`PostTitle`, `PostId`, and
-`PostStatus`). Each of them maps to values of type `Text`, `Int`, and `Status` respectively.
+Let's take a look at an example. First, we define our key type. This specifies the constructor for
+each possible key, as well as the type of its corresponding value. Here we have 3 keys (`PostTitle`,
+`PostId`, and `PostStatus`). Each of them maps to values of type `Text`, `Int`, and `Status`
+respectively. You'll also notice we're using GADTs, allowing the type parameter `a` to be determined
+by the constructor used.
 
 ```haskell
 data PostKey a where
@@ -281,8 +426,8 @@ data PostKey a where
   PostStatus :: PostKey Status
 ```
 
-As is common for map types, we need a way to compare and order keys. However, the standard `Ord`
-type class won't cut it, because it compares things of the same type.
+As is common for map types, we need a way to compare and order keys. Normally this would result in a
+constraint that requires keys to have an instance of the `Ord` type class.
 
 ```haskell
 class Eq a => Ord a where
@@ -290,9 +435,9 @@ class Eq a => Ord a where
   ...
 ```
 
-In our case, we have a dependently typed parameter that may change for each key. Therefore if we
-want to be able to compare every possible key, we need something like this, which allows us to
-compare two values that share a type constructor but not necessarily a type:
+However, we can't write an `Ord` instance for our key type because we need to compare values that
+share a type constructor but aren't necessarily of the same type. To enable this comparison,
+`dependent-map` uses the class below.
 
 ```haskell
 class GEq f => GCompare (f :: k -> *) where
@@ -300,7 +445,9 @@ class GEq f => GCompare (f :: k -> *) where
 ```
 
 Writing these instances by hand would be cumbersome, so thankfully the `dependent-sum-template`
-package provides some template Haskell to produce them for us.
+package provides some template Haskell to produce them for us. The generated `GEq` instance does
+what you'd expect and returns equal only when the two constructors are the same. The `GCompare`
+instance is also unremarkable in that it simply declares keys to be in the order specified.
 
 ```haskell
 deriveGEq ''PostKey
@@ -322,5 +469,4 @@ aPost =
 aPost' =
   insert PostTitle (Identity "Hello again") empty
 ```
->>>>>>> e112c28aab62ee357f85c6ecc36773513488e816
 

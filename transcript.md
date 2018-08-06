@@ -447,7 +447,8 @@ class GEq f => GCompare (f :: k -> *) where
 Writing these instances by hand would be cumbersome, so thankfully the `dependent-sum-template`
 package provides some template Haskell to produce them for us. The generated `GEq` instance does
 what you'd expect and returns equal only when the two constructors are the same. The `GCompare`
-instance is also unremarkable in that it simply declares keys to be in the order specified.
+instance is also unremarkable in that it simply declares keys to be in the order they appear in the
+data type definition.
 
 ```haskell
 deriveGEq ''PostKey
@@ -469,4 +470,83 @@ aPost =
 aPost' =
   insert PostTitle (Identity "Hello again") empty
 ```
+
+**TODO: TALK ABOUT ADDITIONAL INSTANCES WE NEED**
+
+## servant
+
+The final piece in this puzzle is using servant to specify the API and provide a high level client
+to query it. To start with, let's look at the endpoints we're testing. Given WordPress is about
+producing content, the posts API seemed like an interesting and logical place to start. Here are
+some of the things we can do.
+
+
+Endpoint          Method    Description
+-----------       --------- --------------
+/posts            `GET`     Lists posts
+
+/posts            `POST`    Create a post
+
+/posts/&lt;id&gt; `GET`     Get a post
+
+/posts/&lt;id&gt; `DELETE`  Delete a post
+
+From this we get the following `servant` API type.
+
+```haskell
+type Posts =
+  "posts" :>
+  (    List
+  :<|> BasicAuth "wordpress" () :> List
+  :<|> BasicAuth "wordpress" () :> ReqBody '[JSON] PostMap :> Post '[JSON] PostMap
+  :<|> BasicAuth "wordpress" () :> Capture "id" Int :> Get '[JSON] PostMap
+  :<|> BasicAuth "wordpress" () :> Capture "id" Int :> QueryParam "force" NoForceDelete :> Delete '[JSON] DeletedPost
+  :<|> BasicAuth "wordpress" () :> Capture "id" Int :> QueryParam' "force" ForceDelete :> Delete '[JSON] DeletedPost
+  )
+
+type PostMap = DMap PostKey Identity
+type List = QueryParamMap ListPostsKey Identity :> Get '[JSON] [PostMap]
+```
+
+From this type, servant can produce client functions for us. This saves us having to deal explicitly
+with `HTTP` libraries and formulating the correct request values by hand.
+
+```haskell
+listPosts :: ListPostsMap -> ClientM [PostMap]
+listPostsAuth :: BasicAuthData -> ListPostsMap -> ClientM [PostMap]
+createPost :: BasicAuthData -> PostMap -> ClientM PostMap
+getPost :: BasicAuthData -> Int -> ClientM PostMap
+deletePost :: BasicAuthData -> Int -> Maybe NoForceDelete -> ClientM DeletedPost
+deletePostForce :: BasicAuthData -> Int -> ForceDelete -> ClientM DeletedPost
+
+(     listPosts :<|> listPostsAuth :<|> createPost :<|> getPost
+ :<|> deletePost :<|> deletePostForce ) =
+  client postsAPI
+```
+
+For those already familiar with servant, you might have noticed that the `List` type used in our API
+definition makes use of a media type called `QueryParamMap`, which is not defined in `servant`. This
+is a new media type I defined that allows the use of `DMap`s to specify query parameters. You see,
+WordPress allows you to filter the posts listed when you `GET` the posts endpoint. It's nice to be
+able to filter on all of the possible combinations of fields that a post specifies, and WordPress
+allows you to do this. However, the way that WordPress handles this filtering presents a problem for
+the intrepid Haskell programmer.
+
+Filtering is done when using the `GET` HTTP method, which, according to the HTTP/1.1 RFC, doesn't
+have any semantics for a request body and should therefore ignore it when producing a response. As a
+result, query parameters must be used to specify filter parameters. Out of the box, `servant`
+handles query parameters by adding arguments of type `Maybe a` to the client function. In our case,
+that would result in a function with over 20 arguments. This presents the same issues we've already
+covered when talking about a type for posts --- we don't want to have to deal with tens of values
+when we only care about a couple.
+
+Given this is largely the same problem we've already solved with `dependent-map`, we can just roll
+out the same solution. There's one more piece of the puzzle in this case though. `servant` doesn't
+know how to turn a `DMap` into a list of query parameters. However, `servant` _does_ allow us to
+extend its capabilities by instancing the relevant type classes.
+
+This presents the same problem that representing posts has --- tens of keys
+that may be specified in almost any conceivable combination. Once again, we can solve this problem
+with `DMap` and a new key type --- `ListPostsKey`. 
+
 

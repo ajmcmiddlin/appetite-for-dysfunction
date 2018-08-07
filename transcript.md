@@ -543,10 +543,24 @@ when we only care about a couple.
 Given this is largely the same problem we've already solved with `dependent-map`, we can just roll
 out the same solution. There's one more piece of the puzzle in this case though. `servant` doesn't
 know how to turn a `DMap` into a list of query parameters. However, `servant` _does_ allow us to
-extend its capabilities by instancing the relevant type classes.
+extend its capabilities by instancing the relevant type classes. Thanks `servant`!
 
-This presents the same problem that representing posts has --- tens of keys
-that may be specified in almost any conceivable combination. Once again, we can solve this problem
-with `DMap` and a new key type --- `ListPostsKey`. 
+```haskell
+data QueryParamMap (key :: * -> *) (f :: * -> *)
 
+instance (ToQueryParamKeyValues key f, HasClient api) => HasClient (QueryParamMap key f :> api) where
+  type Client (QueryParamMap key f :> api) = DMap key f -> Client api
+
+  clientWithRoute Proxy req dm =
+    let
+      addPair (k, v) = appendToQueryString k (Just v)
+      f ka fa req' = foldr addPair req' $ toQueryParamKeyValues ka fa
+    in
+      clientWithRoute (Proxy :: Proxy api) $ DM.foldrWithKey f req dm
+```
+
+The code above gives us two things: a type constructor to use in `servant` APIs that signals the use
+of a `DMap` for query parameters, and an instance for `HasClient` that tells `servant` how to
+deal with `QueryParamMap`s in clients. That is, what is the type of the client function, and how
+should the `DMap` given as an argument modify the request being made.
 

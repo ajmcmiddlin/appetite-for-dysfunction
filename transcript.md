@@ -448,12 +448,17 @@ Writing these instances by hand would be cumbersome, so thankfully the `dependen
 package provides some template Haskell to produce them for us. The generated `GEq` instance does
 what you'd expect and returns equal only when the two constructors are the same. The `GCompare`
 instance is also unremarkable in that it simply declares keys to be in the order they appear in the
-data type definition.
+data type definition. We have a similar problem with `Show`, so there's a `GShow` class with member
+`gshowsPrec :: forall (a :: k). Int -> t a -> ShowS`.
 
 ```haskell
 deriveGEq ''PostKey
 deriveGCompare ''PostKey
+deriveGShow ''PostKey
 ```
+
+In addition to the instances that `dependent-sum-template` can derive for us, we need a few more.
+<!-- TODO: talk about aeson instances -->
 
 Now that we have a key type and the necessary instances for it, we can create a map using `fromList`
 or `insert` values into `empty`. You'll notice that our map type takes a type constructor --- in
@@ -470,8 +475,6 @@ aPost =
 aPost' =
   insert PostTitle (Identity "Hello again") empty
 ```
-
-**TODO: TALK ABOUT ADDITIONAL INSTANCES WE NEED**
 
 ## servant
 

@@ -32,7 +32,7 @@ A tool for deploying NixOS machines.
 - Also a great way to deploy environments
 :::
 
-## Deploying WordPress
+## WordPress specification
 
 ##
 
@@ -119,5 +119,32 @@ services.httpd = {
 ```nix
 # HTTP, HTTPS, MySQL
 networking.firewall.allowedTCPPorts = [ 80 443 3306 ];
+```
+
+## Machine specification
+
+```nix
+{
+  wordpress =
+    { config, pkgs, ... }:
+    { deployment.targetEnv = "virtualbox";
+      deployment.virtualbox.memorySize = 4096; # megabytes
+      deployment.virtualbox.vcpu = 4; # number of cpus
+      deployment.virtualbox.headless = true;
+    };
+}
+```
+
+## Deploying
+
+##
+
+<!-- TODO: make a little video showing a deployment -->
+
+```nix
+$ nixops create ./wp.nix ./wp-vbox.nix -d wp
+$ nixops deploy -d wp
+$ nixops info -d wp
+$ nixops ssh -d wp wordpress
 ```
 

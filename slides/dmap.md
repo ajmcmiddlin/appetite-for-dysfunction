@@ -66,4 +66,25 @@ data Post =
 
 ## `DMap`
 
+::: notes
+- type safe heterogenous map --- value type depends on key
+- colleagues had some success using `DMap` from the `dependent-map` package to wrangle JSON objects
+- decided to have a go, and also had success
+:::
+
+##
+
+```haskell
+aPost :: Applicative f => DMap PostKey f
+aPost =
+  fromList [ PostTitle ==> "Hello Compose"
+           , PostStatus ==> Publish
+           , PostAuthor ==> 1
+           ]
+```
+
+##
+
+```haskell
+```
 

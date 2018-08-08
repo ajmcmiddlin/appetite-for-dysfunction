@@ -448,17 +448,12 @@ Writing these instances by hand would be cumbersome, so thankfully the `dependen
 package provides some template Haskell to produce them for us. The generated `GEq` instance does
 what you'd expect and returns equal only when the two constructors are the same. The `GCompare`
 instance is also unremarkable in that it simply declares keys to be in the order they appear in the
-data type definition. We have a similar problem with `Show`, so there's a `GShow` class with member
-`gshowsPrec :: forall (a :: k). Int -> t a -> ShowS`.
+data type definition.
 
 ```haskell
 deriveGEq ''PostKey
 deriveGCompare ''PostKey
-deriveGShow ''PostKey
 ```
-
-In addition to the instances that `dependent-sum-template` can derive for us, we need a few more.
-<!-- TODO: talk about aeson instances -->
 
 Now that we have a key type and the necessary instances for it, we can create a map using `fromList`
 or `insert` values into `empty`. You'll notice that our map type takes a type constructor --- in
@@ -474,6 +469,132 @@ aPost =
 
 aPost' =
   insert PostTitle (Identity "Hello again") empty
+```
+
+It's not required to create the map, but it would be nice to display values of our map's type.
+Especially when `hedgehog` is outputting values when a test fails. For the same reasons we `dependent-sum-template` provides
+a similar problem with `Show`, so there's a `GShow` class to show
+constructors for our key type.
+
+
+deriveGShow ''PostKey
+
+In addition to the instances that `dependent-sum-template` can derive for us, we need a few more. To
+start with, we would like a way to show the values as well as the keys in our `DMap`. This is done
+using the `ShowTag` class, which can produce a `showsPrec` function for a value in our `DMap` given
+the key constructor.
+
+```haskell
+class GShow tag => ShowTag tag f where
+  showTaggedPrec :: tag a -> Int -> f a -> ShowS
+```
+
+We might try to write an instance that looks like this.
+
+```haskell
+instance Show1 f => ShowTag PostKey f where
+  showTaggedPrec _ = showsPrec1
+```
+
+Using `showsPrec1` requires we have a `Show` instance for every `a` we might want to show as part of
+an `f a`. Unfortunately GHC can't satisfy this constraint in the instance above. We can see by
+looking at the code that all of the possible values in our map have a `Show` instance, but GHC needs
+us to pattern match on each constructor to determine the type of the value, and therefore satisfy
+constraints. Damn.
+
+The instance is therefore `n + 1` lines of boilerplate, where `n` is the number of keys we have.
+
+```haskell
+instance Show1 f => ShowTag PostKey f where
+  showTaggedPrec PostDate          = showsPrec1
+  showTaggedPrec PostDateGmt       = showsPrec1
+  showTaggedPrec PostGuid          = showsPrec1
+  showTaggedPrec PostId            = showsPrec1
+  showTaggedPrec PostLink          = showsPrec1
+  showTaggedPrec PostModified      = showsPrec1
+  showTaggedPrec PostModifiedGmt   = showsPrec1
+  showTaggedPrec PostSlug          = showsPrec1
+  showTaggedPrec PostStatus        = showsPrec1
+  showTaggedPrec PostType          = showsPrec1
+  showTaggedPrec PostPassword      = showsPrec1
+  showTaggedPrec PostTitle         = showsPrec1
+  showTaggedPrec PostContent       = showsPrec1
+  showTaggedPrec PostAuthor        = showsPrec1
+  showTaggedPrec PostExcerpt       = showsPrec1
+  showTaggedPrec PostFeaturedMedia = showsPrec1
+  showTaggedPrec PostCommentStatus = showsPrec1
+  showTaggedPrec PostPingStatus    = showsPrec1
+  showTaggedPrec PostFormat        = showsPrec1
+  showTaggedPrec PostMeta          = showsPrec1
+  showTaggedPrec PostSticky        = showsPrec1
+  showTaggedPrec PostTemplate      = showsPrec1
+  showTaggedPrec PostCategories    = showsPrec1
+  showTaggedPrec PostTags          = showsPrec1
+```
+
+However, we can easily get rid of this with template haskell.
+
+```haskell
+deriveShowTag n = do
+  keyType <- reify n
+  let
+    mkEq conName = clause [conP conName []] (normalB (varE 'showsPrec1)) []
+    mkDecl = \case
+      (GadtC [conName] _bangTypes _ty) -> mkEq conName
+      _ -> fail "Can only deriveFromJSONViaKey with GADT constructors"
+    decl = case keyType of
+      TyConI (DataD _ctx _n _tyvars _kind cons _deriving) ->
+        funD 'showTaggedPrec $ fmap mkDecl cons
+      _ -> fail "Can only deriveFromJSONViaKey with a type constructor"
+  f' <- varT <$> newName "f"
+  let c = cxt [appT (conT ''Show1) f']
+  pure <$> instanceD c (foldl appT (conT ''ShowTag) [conT n, f']) [decl]
+```
+
+WordPress uses JSON as its data interchange format, and `servant` includes support for the JSON
+library `aeson`, so we're going to write some `ToJSON` and `FromJSON` instances for our `DMap`s. It
+turns out these can take the same form as our `ShowTag` instance above. As a result, we can abstract
+out the specifics of our template haskell above and get a function to derive multiple classes that
+we need.
+
+```haskell
+deriveFromJSONViaKey, deriveToJSONViaKey, deriveShowTag, deriveEqViaKey, deriveEqTag ::
+  Name
+  -> DecsQ
+
+deriveFromJSONViaKey n =
+  deriveClassForGADT ''FromJSONViaKey ''FromJSON1 n 'parseJSONViaKey 'parseJSON1
+
+deriveToJSONViaKey n =
+  deriveClassForGADT ''ToJSONViaKey ''ToJSON1 n 'toJSONViaKey 'toJSON1
+
+deriveShowTag n =
+  deriveClassForGADT ''ShowTag ''Show1 n 'showTaggedPrec 'showsPrec1
+
+deriveEqViaKey n =
+  deriveClassForGADT ''EqViaKey ''Eq1 n 'eqViaKey 'eq1
+
+deriveClassForGADT ::
+  Name
+  -> Name
+  -> Name
+  -> Name
+  -> Name
+  -> DecsQ
+deriveClassForGADT klass ctx ty method f = do
+  keyType <- reify ty
+  let
+    mkEq conName = clause [conP conName []] (normalB (varE f)) []
+    mkDecl = \case
+      (GadtC [conName] _bangTypes _ty) -> mkEq conName
+      _ -> fail "Can only deriveFromJSONViaKey with GADT constructors"
+    decl = case keyType of
+      TyConI (DataD _ctx _n _tyvars _kind cons _deriving) ->
+        funD method $ fmap mkDecl cons
+      _ -> fail "Can only deriveFromJSONViaKey with a type constructor"
+  f' <- varT <$> newName "f"
+  let c = cxt [appT (conT ctx) f']
+  pure <$> instanceD c (foldl appT (conT klass) [conT ty, f']) [decl]
 ```
 
 ## servant

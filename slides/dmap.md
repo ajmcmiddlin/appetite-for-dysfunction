@@ -75,6 +75,17 @@ data Post =
 ##
 
 ```haskell
+aPost :: DMap PostKey Identity
+aPost =
+  fromList [ PostTitle  :=> Identity "Hello Compose"
+           , PostStatus :=> Identity Publish
+           , PostAuthor :=> Identity 1
+           ]
+```
+
+##
+
+```haskell
 aPost :: Applicative f => DMap PostKey f
 aPost =
   fromList [ PostTitle ==> "Hello Compose"
@@ -86,5 +97,110 @@ aPost =
 ##
 
 ```haskell
+data DMap (key :: v -> *) (f :: k -> *)
 ```
 
+::: notes
+- `key` is a type constructor for our keys
+- `f` is a type constructor applied to each value type
+:::
+
+##
+
+```haskell
+data PostKey a where
+  PostTitle  :: PostKey Text
+  PostStatus :: PostKey Status
+  PostAuthor :: PostKey Author
+  -- ...
+  -- more constructors
+```
+
+##
+
+```haskell
+class Eq a => Ord a where
+  compare :: a -> a -> Ordering
+  ...
+
+```
+
+```haskell
+class GEq f => GCompare (key :: v -> *) where
+  gcompare :: key a -> key b -> GOrdering a b 
+```
+
+::: notes
+- Need a way to compare keys to be used as a map
+- `Ord` doesn't type check
+- `GCompare` is the answer
+:::
+
+##
+
+```haskell
+deriveGEq ''PostKey
+deriveGCompare ''PostKey
+ 
+```
+
+##
+
+```haskell
+deriveGEq ''PostKey
+deriveGCompare ''PostKey
+deriveGShow ''PostKey
+```
+
+::: notes
+Same story with showing keys
+:::
+
+## What about values?
+
+::: notes
+- So far only have classes for keys
+- value types are dependent on key types
+- classes relating to values parameterised over keys to determine value type
+:::
+
+##
+
+```haskell
+class GShow tag => ShowTag (key :: k -> *) (f :: k -> *) where
+  showTaggedPrec :: forall (v :: k). key v -> Int -> f v -> ShowS
+```
+
+::: notes
+This says: given a key, which determines the type of the value `v`, return the showsPrec function for `f v`.
+
+This is a common pattern for these instances of dependently typed GADTs.
+:::
+
+##
+
+```haskell
+instance ShowTag PostKey f where
+  showTaggedPrec _ = showsPrec1
+```
+
+::: notes
+It'd be really nice if we could write this. Unfortunately, `showsPrec1` has a `Show` constraint on
+the value type --- the `a` in the `f a` we're showing. That constraint can't be satisfied because
+GHC doesn't know what the value type is without knowing the constructor that's in play. GHC
+won't inspect our GADT to look at all of the possible inhabitants of our value type and check the
+constraint holds either.
+:::
+
+##
+
+```haskell
+instance ShowTag PostKey f where
+  showTaggedPrec PostTitle = showsPrec1
+  showTaggedPrec PostId = showsPrec1
+  showTaggedPrec PostAuthor = showsPrec1
+  -- ...
+  -- regex replace your way to victory
+```
+
+##

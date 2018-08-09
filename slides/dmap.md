@@ -168,7 +168,8 @@ Same story with showing keys
 
 ```haskell
 class GShow tag => ShowTag (key :: k -> *) (f :: k -> *) where
-  showTaggedPrec :: forall (v :: k). key v -> Int -> f v -> ShowS
+  showTaggedPrec ::
+    forall (v :: k). key v -> Int -> f v -> ShowS
 ```
 
 ::: notes
@@ -204,3 +205,21 @@ instance ShowTag PostKey f where
 ```
 
 ##
+
+```haskell
+deriveShowTag :: Name -> DecsQ
+deriveShowTag n = do
+  keyType <- reify n
+  let
+    mkEq conName = clause [conP conName []] (normalB (varE 'showsPrec1)) []
+    mkDecl = \case
+      (GadtC [conName] _bangTypes _ty) -> mkEq conName
+      _ -> fail "Can only deriveFromJSONViaKey with GADT constructors"
+    decl = case keyType of
+      TyConI (DataD _ctx _n _tyvars _kind cons _deriving) ->
+        funD 'showTaggedPrec $ fmap mkDecl cons
+      _ -> fail "Can only deriveFromJSONViaKey with a type constructor"
+  f' <- varT <$> newName "f"
+  let c = cxt [appT (conT ''Show1) f']
+  pure <$> instanceD c (foldl appT (conT ''ShowTag) [conT n, f']) [decl]
+```

@@ -4,6 +4,7 @@
 
 ##
 
+::: {style="top: -20px; position: relative;"}
 ```json
 {
   "date": "1900-01-01T12:00:00",
@@ -30,6 +31,7 @@
   "tags": []
 }
 ```
+:::
 
 ##
 
@@ -166,11 +168,13 @@ Same story with showing keys
 
 ##
 
+::: {style="width: 110%; position: relative; left: -20px;"}
 ```haskell
 class GShow tag => ShowTag (key :: k -> *) (f :: k -> *) where
   showTaggedPrec ::
     forall (v :: k). key v -> Int -> f v -> ShowS
 ```
+:::
 
 ::: notes
 This says: given a key, which determines the type of the value `v`, return the showsPrec function for `f v`.
@@ -206,8 +210,10 @@ instance ShowTag PostKey f where
 
 ##
 
+::: {style="width: 125%; position: relative; left: -120px;"}
 ```haskell
-deriveShowTag :: Name -> DecsQ
+deriveShowTag ::
+  Name -> DecsQ
 deriveShowTag n = do
   keyType <- reify n
   let
@@ -223,3 +229,8 @@ deriveShowTag n = do
   let c = cxt [appT (conT ''Show1) f']
   pure <$> instanceD c (foldl appT (conT ''ShowTag) [conT n, f']) [decl]
 ```
+:::
+
+##
+
+

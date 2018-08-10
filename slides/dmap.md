@@ -154,6 +154,7 @@ deriveGCompare ''PostKey
 deriveGShow ''PostKey
 ```
 
+
 ::: notes
 Same story with showing keys
 :::
@@ -162,8 +163,6 @@ Same story with showing keys
 
 ::: notes
 - So far only have classes for keys
-- value types are dependent on key types
-- classes relating to values parameterised over keys to determine value type
 :::
 
 ##
@@ -173,19 +172,25 @@ Same story with showing keys
 class GShow tag => ShowTag (key :: k -> *) (f :: k -> *) where
   showTaggedPrec ::
     forall (v :: k). key v -> Int -> f v -> ShowS
+
+instance forall k (key :: k -> *) (f :: k -> *).
+         ShowTag key f => Show (DMap key f)
 ```
 :::
 
 ::: notes
-This says: given a key, which determines the type of the value `v`, return the showsPrec function for `f v`.
 
-This is a common pattern for these instances of dependently typed GADTs.
+- `ShowTag` tells us how to show values, which allows us to use the `Show` instance for `DMap`
+- This says: given a key, which determines the type of the value `v`, return the showsPrec function for `f v`.
+- Can think of it as looking up a `Show1` instance, using the key to resolve the dependent type.
+- Common pattern for these GADTs with dependent types
+- classes relating to values parameterised over keys to determine value type.
 :::
 
 ##
 
 ```haskell
-instance ShowTag PostKey f where
+instance Show1 f => ShowTag PostKey f where
   showTaggedPrec _ = showsPrec1
 ```
 
@@ -233,4 +238,89 @@ deriveShowTag n = do
 
 ##
 
+::: {style="width: 125%; position: relative; left: -120px;"}
+```haskell
+class GEq tag => EqTag (tag :: k -> *) (f :: k -> *) where
+  eqTagged :: forall (a :: k). tag a -> tag a -> f a -> f a -> Bool
+  
+  
+  
+  
+  
+ 
+```
+:::
+
+::: notes
+Similar to `ShowTag`, `dependent-sum` also defines `EqTag`
+:::
+
+##
+
+::: {style="width: 125%; position: relative; left: -120px;"}
+```haskell
+class GEq tag => EqTag (tag :: k -> *) (f :: k -> *) where
+  eqTagged :: forall (a :: k). tag a -> tag a -> f a -> f a -> Bool
+  
+class FromJSONViaKey k f where
+  parseJSONViaKey ::  k a -> Value -> Parser (f a)
+
+class ToJSONViaKey k f where
+  toJSONViaKey :: k a -> f a -> Value
+```
+:::
+
+::: notes
+- We'd also like Aeson instances
+:::
+
+##
+
+::: {style="width: 125%; position: relative; left: -120px;"}
+```haskell
+deriveClassForGADT ::
+  Name
+  -> Name
+  -> Name
+  -> Name
+  -> Name
+  -> DecsQ
+deriveClassForGADT klass ctx ty method f = do
+  keyType <- reify ty
+  let
+    mkEq conName = clause [conP conName []] (normalB (varE f)) []
+    mkDecl = \case
+      (GadtC [conName] _bangTypes _ty) -> mkEq conName
+      _ -> fail "Can only deriveFromJSONViaKey with GADT constructors"
+    decl = case keyType of
+      TyConI (DataD _ctx _n _tyvars _kind cons _deriving) ->
+        funD method $ fmap mkDecl cons
+      _ -> fail "Can only deriveFromJSONViaKey with a type constructor"
+  f' <- varT <$> newName "f"
+  let c = cxt [appT (conT ctx) f']
+  pure <$> instanceD c (foldl appT (conT klass) [conT ty, f']) [decl]
+```
+:::
+
+::: notes
+`EqTag` isn't quite the same shape, but our Aeson instances and `ShowTag` are all exactly the same
+shape, so we can pull out the common bits.
+:::
+
+##
+
+```haskell
+deriveFromJSONViaKey n =
+  deriveClassForGADT ''FromJSONViaKey
+                     ''FromJSON1
+                     n
+                     'parseJSONViaKey
+                     'parseJSON1
+```
+
+## `DMap` summary
+
+- `DMap` to get semantics of `Data.Map` and records
+- Instances for GADTs can get a bit tricky and repetitive
+- Template haskell can remove some of the boilerplate
 

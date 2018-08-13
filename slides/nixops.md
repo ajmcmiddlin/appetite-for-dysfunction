@@ -122,6 +122,8 @@ networking.firewall.allowedTCPPorts = [ 80 443 3306 ];
 
 ## Machine specification
 
+##
+
 ```nix
 {
   wordpress =

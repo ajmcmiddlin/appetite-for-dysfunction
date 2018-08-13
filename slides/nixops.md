@@ -2,15 +2,14 @@
 
 ## Nix
 
-- Purely functional package manager.
+- Purely functional language for package management.
 - Specify packages as referentially transparent expressions.
+- Huge library of packages (`nixpkgs`)
 - Content-based hashing of all artifacts.
 
 ::: notes
-- All packages kept in a read only store
 - If any build inputs change, the artifact changes
 - Content-based hashing results in reliable caching and sharing of artifacts
-- Each artifact can build and link against exact versions without impacting anything else
 :::
 
 ## NixOS

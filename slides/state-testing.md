@@ -72,3 +72,21 @@
       data-background-transition="none"
     }
 
+## { data-background-image="images/state-example-fail-01.svg"
+      data-background-color="white"
+      data-background-size="80%"
+      data-background-transition="none"
+    }
+
+## { data-background-image="images/state-example-fail-02.svg"
+      data-background-color="white"
+      data-background-size="80%"
+      data-background-transition="none"
+    }
+
+## { data-background-image="images/state-example-fail-03.svg"
+      data-background-color="white"
+      data-background-size="80%"
+      data-background-transition="none"
+    }
+

@@ -42,7 +42,31 @@
 
 ## Example
 
-## { data-background-image="images/state-example.svg"
+## { data-background-image="images/state-example-01.svg"
+      data-background-color="white"
+      data-background-size="80%"
+      data-background-transition="none"
+    }
+
+## { data-background-image="images/state-example-02.svg"
+      data-background-color="white"
+      data-background-size="80%"
+      data-background-transition="none"
+    }
+
+## { data-background-image="images/state-example-03.svg"
+      data-background-color="white"
+      data-background-size="80%"
+      data-background-transition="none"
+    }
+
+## { data-background-image="images/state-example-04.svg"
+      data-background-color="white"
+      data-background-size="80%"
+      data-background-transition="none"
+    }
+
+## { data-background-image="images/state-example-05.svg"
       data-background-color="white"
       data-background-size="80%"
       data-background-transition="none"

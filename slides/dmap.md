@@ -1,6 +1,6 @@
 # `DMap`
 
-## API
+## Wordpress' API
 
 ##
 
@@ -60,6 +60,10 @@ data Post =
 
 ## A type for each occassion?
 
+```haskell
+-- TODO: code snippet to demonstrate approach
+```
+
 ::: notes
 - Could have multiple types depending on which fields are used
 - Good if only a few combinations
@@ -117,6 +121,26 @@ data PostKey a where
   -- ...
   -- more constructors
 ```
+
+##
+
+```haskell
+class Eq a => Ord a where
+  compare :: a -> a -> Ordering
+  ...
+
+```
+
+```haskell
+
+ 
+```
+
+::: notes
+- Need a way to compare keys to be used as a map
+- `Ord` doesn't type check
+- `GCompare` is the answer
+:::
 
 ##
 

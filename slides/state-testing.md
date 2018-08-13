@@ -42,4 +42,9 @@
 
 ## Example
 
-<!-- TODO: diagram(s) showing state machine test -->
+## { data-background-image="images/state-example.svg"
+      data-background-color="white"
+      data-background-size="80%"
+      data-background-transition="none"
+    }
+

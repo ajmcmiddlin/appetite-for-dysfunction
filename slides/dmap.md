@@ -142,25 +142,24 @@ class Eq a => Ord a where
 
 ```
 
-```haskell
-
- 
-```
-
 ::: notes
 - Need a way to compare keys to be used as a map
-- `Ord` doesn't type check
-- `GCompare` is the answer
 :::
 
 ##
 
 ```haskell
-class Eq a => Ord a where
-  compare :: a -> a -> Ordering
+instance Ord (PostKey a) where
+  compare :: PostKey a -> PostKey a -> Ordering
   ...
 
 ```
+
+::: notes
+- `Ord` instance would mean we can only compare keys with the same value type.
+:::
+
+##
 
 ```haskell
 class GEq f => GCompare (key :: v -> *) where
@@ -168,9 +167,8 @@ class GEq f => GCompare (key :: v -> *) where
 ```
 
 ::: notes
-- Need a way to compare keys to be used as a map
-- `Ord` doesn't type check
-- `GCompare` is the answer
+- Notice that this compares things of type `key a` and `key b`.
+- Constructor (i.e. set of keys) must match, but type of value can differ
 :::
 
 ##
@@ -188,7 +186,6 @@ deriveGEq ''PostKey
 deriveGCompare ''PostKey
 deriveGShow ''PostKey
 ```
-
 
 ::: notes
 Same story with showing keys

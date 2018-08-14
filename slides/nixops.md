@@ -208,6 +208,48 @@ networking.firewall.allowedTCPPorts = [ 80 443 3306 ];
 {
   wordpress =
     { config, pkgs, ... }:
+
+
+
+
+
+}
+```
+
+##
+
+```nix
+{
+  wordpress =
+    { config, pkgs, ... }:
+    { deployment.targetEnv = "virtualbox";
+
+
+
+    };
+}
+```
+
+##
+
+```nix
+{
+  wordpress =
+    { config, pkgs, ... }:
+    { deployment.targetEnv = "virtualbox";
+      deployment.virtualbox.memorySize = 4096; # megabytes
+      deployment.virtualbox.vcpu = 4; # number of cpus
+
+    };
+}
+```
+
+##
+
+```nix
+{
+  wordpress =
+    { config, pkgs, ... }:
     { deployment.targetEnv = "virtualbox";
       deployment.virtualbox.memorySize = 4096; # megabytes
       deployment.virtualbox.vcpu = 4; # number of cpus
@@ -220,7 +262,32 @@ networking.firewall.allowedTCPPorts = [ 80 443 3306 ];
 
 ##
 
-<!-- TODO: make a little video showing a deployment -->
+```nix
+$ nixops create ./wp.nix ./wp-vbox.nix -d wp
+
+
+ 
+```
+
+##
+
+```nix
+$ nixops create ./wp.nix ./wp-vbox.nix -d wp
+$ nixops deploy -d wp
+
+ 
+```
+
+##
+
+```nix
+$ nixops create ./wp.nix ./wp-vbox.nix -d wp
+$ nixops deploy -d wp
+$ nixops info -d wp
+ 
+```
+
+##
 
 ```nix
 $ nixops create ./wp.nix ./wp-vbox.nix -d wp

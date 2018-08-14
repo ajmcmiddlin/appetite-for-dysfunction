@@ -2,7 +2,7 @@
 
 ##
 
-Specify properties that functions should have, and ensure they hold with random inputs.
+Apply functions to randomly generated inputs and ensuring that desirable properties hold.
 
 ## Example
 

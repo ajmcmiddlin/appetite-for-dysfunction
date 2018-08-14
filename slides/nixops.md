@@ -4,7 +4,7 @@
 
 - Purely functional language for package management.
 - Specify packages as referentially transparent expressions.
-- Huge library of packages (`nixpkgs`)
+- Huge library of packages (`nixpkgs`).
 - Content-based hashing of all artifacts.
 
 ::: notes
@@ -185,6 +185,43 @@ services.httpd = {
     hostName = "wordpress";
     extraSubservices = [{
       ...
+      serviceType = "wordpress";
+
+
+
+    }];
+  }];
+};
+```
+
+##
+
+```nix
+services.httpd = {
+  ...
+  virtualHosts = [{
+    hostName = "wordpress";
+    extraSubservices = [{
+      ...
+      serviceType = "wordpress";
+      package = wpPackage;
+
+
+    }];
+  }];
+};
+```
+
+##
+
+```nix
+services.httpd = {
+  ...
+  virtualHosts = [{
+    hostName = "wordpress";
+    extraSubservices = [{
+      ...
+      serviceType = "wordpress";
       package = wpPackage;
       plugins = [ basicAuthPlugin ];
       themes = [ twentySeventeen ];

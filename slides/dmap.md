@@ -41,7 +41,14 @@
 }
 ```
 
-## Maybe baby
+::: notes
+- Huge variation in how post can be specified
+- Almost every field optional
+:::
+
+## Maybe?
+
+##
 
 ```haskell
 data Post =
@@ -54,20 +61,18 @@ data Post =
 ```
 
 ::: notes
-- First thought might be to use `Maybe` everywhere
-- This is clunky and doesn't feel like a good fit given we have to deal with all fields all the time.
+- First thought might be to use `Maybe` everywhere.
+- Doesn't scale.
+- Must specify every field when we might only care about 1.
 :::
 
 ## A type for each occassion?
 
-```haskell
--- TODO: code snippet to demonstrate approach
-```
-
 ::: notes
-- Could have multiple types depending on which fields are used
-- Good if only a few combinations
-- WordPress has a huge number of possible combinations and a poorly specified API
+- Sometimes a good solution to these problems is to have a type for each scenario.
+- Way too many combinations.
+- Not sure what we'll get back from API early in process.
+- Might be appropriate if small number of uses.
 :::
 
 ## `DMap`
@@ -121,6 +126,12 @@ data PostKey a where
   -- ...
   -- more constructors
 ```
+
+::: notes
+- Using `GADT` syntax
+- `PostKey` is the type.
+- `a` is a type level variable that tracks the type of the value corresponding to each key.
+:::
 
 ##
 

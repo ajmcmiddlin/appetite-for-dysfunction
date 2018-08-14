@@ -367,9 +367,3 @@ deriveFromJSONViaKey n =
                      'parseJSON1
 ```
 
-## `DMap` summary
-
-- `DMap` to get semantics of `Data.Map` and records
-- Instances for GADTs can get a bit tricky and repetitive
-- Template haskell can remove some of the boilerplate
-

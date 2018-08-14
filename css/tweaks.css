@@ -6,7 +6,11 @@
     max-height: 80%;
 }
 
-blockquote {
+.smaller-code pre code {
+    font-size: 90%;
+}
+
+blockquote, .left {
     text-align: left;
 }
 

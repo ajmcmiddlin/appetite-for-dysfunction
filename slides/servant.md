@@ -7,9 +7,9 @@ API -> ClientFunctions
 ```
 
 ::: notes
-- `servant` not just for servers
-- server doesn't need to be written in Haskell
-- client functions aren't magic --- translate API to HTTP requests
+- `servant` is an excellent library for web APIs
+- client functions speak HTTP --- server doesn't have to be in Haskell
+- we deal in Haskell data types
 :::
 
 ##
@@ -46,22 +46,18 @@ type List = QueryParamMap ListPostsKey Identity :>
 ##
 
 ```haskell
-listPosts :: ListPostsMap -> ClientM [PostMap]
-listPostsAuth :: BasicAuthData -> ListPostsMap -> ClientM [PostMap]
-createPost :: BasicAuthData -> PostMap -> ClientM PostMap
-getPost :: BasicAuthData -> Int -> ClientM PostMap
-deletePost :: BasicAuthData -> Int -> Maybe NoForceDelete -> ClientM DeletedPost
-deletePostForce :: BasicAuthData -> Int -> ForceDelete -> ClientM DeletedPost
-
-(     listPosts :<|> listPostsAuth :<|> createPost :<|> getPost
+(     listPosts :<|> listPostsAuth
+ :<|> getPost
+ :<|> createPost
  :<|> deletePost :<|> deletePostForce ) =
-  client postsAPI
+   client postsAPI
 ```
 
 ## Query parameters
 
 ##
 
+::: {.smaller-code}
 ```haskell
 data ListPostsKey a where
   ListPostsContext           :: ListPostsKey Context
@@ -84,6 +80,7 @@ data ListPostsKey a where
   ListPostsTagsExclude       :: ListPostsKey (NonEmpty Text)
   ListPostsSticky            :: ListPostsKey Sticky
 ```
+:::
 
 ::: notes
 - These are all the criteria we can specify to filter posts when listing
@@ -103,9 +100,11 @@ type List = QueryParamMap ListPostsKey Identity :>
 - WP API requires `GET` with query parameters.
 - `QueryParamMap` allows us to specify query parameters as a `DMap`.
 - `QueryParamMap` doesn't come with `servant`. I defined it.
+- `servant`'s query parameter handling results in a `Maybe` value for each parameter
 - `servant`'s use of type classes allow us to easily extend its capabilities.
 :::
 
+<!--
 ##
 
 ```haskell
@@ -144,6 +143,8 @@ instance (KnownSymbol sym, ToHttpApiData a, HasClient api)
   19 parameters.
 :::
 
+-->
+
 ##
 
 ```haskell
@@ -154,10 +155,35 @@ instance (ToQueryParamKeyValues key f, HasClient api)
 
   type Client (QueryParamMap key f :> api) =
     DMap key f -> Client api
+
+  clientWithRoute Proxy req dm =
+    let
+      addPair (k, v) = appendToQueryString k (Just v)
+      f ka fa req' =
+        foldr addPair req' $ toQueryParamKeyValues ka fa
+    in
+      clientWithRoute (Proxy :: Proxy api) $
+        DM.foldrWithKey f req dm
 ```
 
-## `servant` take aways
+##
 
-- `servant` allows us to define part of an API and get client functions for free
-- `servant`'s design allows us to extend it as necessary
+```haskell
+
+
+
+
+
+  type Client (QueryParamMap key f :> api) =
+    DMap key f -> Client api
+
+
+
+
+
+
+
+
+ 
+```
 

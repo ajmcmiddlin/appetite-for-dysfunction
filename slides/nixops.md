@@ -59,6 +59,51 @@ wpPackage = pkgs.fetchFromGitHub {
 
 ```nix
 basicAuthPlugin = pkgs.stdenv.mkDerivation {
+
+
+
+
+
+
+
+
+};
+```
+
+##
+
+```nix
+basicAuthPlugin = pkgs.stdenv.mkDerivation {
+  name = "basic-auth-plugin";
+
+
+
+
+
+
+
+};
+```
+
+##
+
+```nix
+basicAuthPlugin = pkgs.stdenv.mkDerivation {
+  name = "basic-auth-plugin";
+  src = pkgs.fetchurl {
+    url = https://github.com/WP-API/Basic-Auth/...8.zip;
+    sha256 = "b7f4fe0e6064040...";
+  };
+
+
+
+};
+```
+
+##
+
+```nix
+basicAuthPlugin = pkgs.stdenv.mkDerivation {
   name = "basic-auth-plugin";
   src = pkgs.fetchurl {
     url = https://github.com/WP-API/Basic-Auth/...8.zip;
@@ -69,6 +114,7 @@ basicAuthPlugin = pkgs.stdenv.mkDerivation {
   installPhase = "mkdir -p $out; cp -R * $out/";
 };
 ```
+
 
 ##
 
@@ -93,6 +139,40 @@ services.mysql = {
   enable = true;
   package = pkgs.mysql;
   initialScript = ./init.sql;
+};
+```
+
+##
+
+```nix
+services.httpd = {
+
+
+
+
+
+
+
+
+
+
+};
+```
+
+##
+
+```nix
+services.httpd = {
+  ...
+  virtualHosts = [{
+    hostName = "wordpress";
+
+
+
+
+
+
+  }];
 };
 ```
 

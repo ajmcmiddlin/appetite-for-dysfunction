@@ -199,36 +199,13 @@ Same story with showing keys
 
 ::: notes
 - So far only have classes for keys
+- e.g. if we want to `Show` or compare a `DMap`, we need to handle its values
 :::
 
 ##
 
 ::: {style="width: 110%; position: relative; left: -20px;"}
 ```haskell
-class GShow tag => ShowTag (key :: k -> *) (f :: k -> *) where
-  showTaggedPrec ::
-    forall (v :: k). key v -> Int -> f v -> ShowS
-
-
-
- 
-```
-:::
-
-::: notes
-- This says: given a key, which determines the type of the value `v`, return what we need to
-  define an instance of `Show` for `f a`.
-- Common pattern for these GADTs with dependent types
-:::
-
-##
-
-::: {style="width: 110%; position: relative; left: -20px;"}
-```haskell
-class GShow tag => ShowTag (key :: k -> *) (f :: k -> *) where
-  showTaggedPrec ::
-    forall (v :: k). key v -> Int -> f v -> ShowS
-
 instance forall k (key :: k -> *) (f :: k -> *).
          ShowTag key f
          => Show (DMap key f)
@@ -236,23 +213,41 @@ instance forall k (key :: k -> *) (f :: k -> *).
 :::
 
 ::: notes
-- Not a surprise that, given a way to get a `showsPrec` definition we can get a `Show` instance
+- This is provided by `dependent-map`, but we need a `ShowTag` instance
 :::
 
 ##
 
 ```haskell
-showsPrec1 :: (Show1 f, Show a) => Int -> f a -> ShowS
-
 instance Show1 f => ShowTag PostKey f where
   showTaggedPrec ::
-    forall (a :: k). key a -> Int -> f a -> ShowS
+    forall (a :: k).
+    key a -> Int -> f a -> ShowS
+ 
+```
+
+::: notes
+- Given a key, return the function required to define a `Show` instance for `f a`
+- The equation for every constructor is the same
+- Key is like a proxy --- only used to determine the type of the value we want to show
+- Seems like we should be able to write this.
+- GHC can't determine the constraint is met without a value
+:::
+
+##
+
+```haskell
+instance Show1 f => ShowTag PostKey f where
+  showTaggedPrec ::
+    forall (a :: k).
+    key a -> Int -> f a -> ShowS
   showTaggedPrec _ = showsPrec1
 ```
 
 ::: notes
-- `showsPrec1` is polymorphic and gives us what we need
-- It turns out that key is like a proxy --- only used to determine the type of the value we want to show
+- Given a key, return the function required to define a `Show` instance for `f a`
+- The equation for every constructor is the same
+- Key is like a proxy --- only used to determine the type of the value we want to show
 - Seems like we should be able to write this.
 - GHC can't determine the constraint is met without a value
 :::

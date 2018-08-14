@@ -205,33 +205,52 @@ class GShow tag => ShowTag (key :: k -> *) (f :: k -> *) where
   showTaggedPrec ::
     forall (v :: k). key v -> Int -> f v -> ShowS
 
-instance forall k (key :: k -> *) (f :: k -> *).
-         ShowTag key f => Show (DMap key f)
+
+
+ 
 ```
 :::
 
 ::: notes
-
-- `ShowTag` tells us how to show values, which allows us to use the `Show` instance for `DMap`
-- This says: given a key, which determines the type of the value `v`, return the showsPrec function for `f v`.
-- Can think of it as looking up a `Show1` instance, using the key to resolve the dependent type.
+- This says: given a key, which determines the type of the value `v`, return what we need to
+  define an instance of `Show` for `f a`.
 - Common pattern for these GADTs with dependent types
-- classes relating to values parameterised over keys to determine value type.
+:::
+
+##
+
+::: {style="width: 110%; position: relative; left: -20px;"}
+```haskell
+class GShow tag => ShowTag (key :: k -> *) (f :: k -> *) where
+  showTaggedPrec ::
+    forall (v :: k). key v -> Int -> f v -> ShowS
+
+instance forall k (key :: k -> *) (f :: k -> *).
+         ShowTag key f
+         => Show (DMap key f)
+```
+:::
+
+::: notes
+- Not a surprise that, given a way to get a `showsPrec` definition we can get a `Show` instance
 :::
 
 ##
 
 ```haskell
+showsPrec1 :: (Show1 f, Show a) => Int -> f a -> ShowS
+
 instance Show1 f => ShowTag PostKey f where
+  showTaggedPrec ::
+    forall (a :: k). key a -> Int -> f a -> ShowS
   showTaggedPrec _ = showsPrec1
 ```
 
 ::: notes
-It'd be really nice if we could write this. Unfortunately, `showsPrec1` has a `Show` constraint on
-the value type --- the `a` in the `f a` we're showing. That constraint can't be satisfied because
-GHC doesn't know what the value type is without knowing the constructor that's in play. GHC
-won't inspect our GADT to look at all of the possible inhabitants of our value type and check the
-constraint holds either.
+- `showsPrec1` is polymorphic and gives us what we need
+- It turns out that key is like a proxy --- only used to determine the type of the value we want to show
+- Seems like we should be able to write this.
+- GHC can't determine the constraint is met without a value
 :::
 
 ##
@@ -241,8 +260,7 @@ instance ShowTag PostKey f where
   showTaggedPrec PostTitle = showsPrec1
   showTaggedPrec PostId = showsPrec1
   showTaggedPrec PostAuthor = showsPrec1
-  -- ...
-  -- regex replace your way to victory
+  ...
 ```
 
 ##
@@ -257,11 +275,11 @@ deriveShowTag n = do
     mkEq conName = clause [conP conName []] (normalB (varE 'showsPrec1)) []
     mkDecl = \case
       (GadtC [conName] _bangTypes _ty) -> mkEq conName
-      _ -> fail "Can only deriveFromJSONViaKey with GADT constructors"
+      _ -> fail "Can only deriveShowTag with GADT constructors"
     decl = case keyType of
       TyConI (DataD _ctx _n _tyvars _kind cons _deriving) ->
         funD 'showTaggedPrec $ fmap mkDecl cons
-      _ -> fail "Can only deriveFromJSONViaKey with a type constructor"
+      _ -> fail "Can only deriveShowTag with a type constructor"
   f' <- varT <$> newName "f"
   let c = cxt [appT (conT ''Show1) f']
   pure <$> instanceD c (foldl appT (conT ''ShowTag) [conT n, f']) [decl]

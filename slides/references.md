@@ -12,9 +12,11 @@
 
 ## Wordpress
 
+::: {.left}
 **WordPress book**  
 [https://github.com/WordPress/book/blob/master/Content/Part%201/2-b2-cafelog.md](https://github.com/WordPress/book/blob/master/Content/Part%201/2-b2-cafelog.md)
 
 **WordPress REST API reference**  
 [https://developer.wordpress.org/rest-api/reference/](https://developer.wordpress.org/rest-api/reference/)
+:::
 

@@ -1,7 +1,5 @@
 # `DMap`
 
-## Wordpress' API
-
 ##
 
 ::: {style="top: -20px; position: relative;"}
@@ -46,7 +44,7 @@
 - Almost every field optional
 :::
 
-## Maybe?
+## `Maybe`?
 
 ##
 
@@ -77,33 +75,12 @@ data Post =
 
 ## `DMap`
 
+
 ::: notes
-- type safe heterogenous map --- value type depends on key
+- type safe heterogenous map --- type of each value may vary, and depends on the key
 - colleagues had some success using `DMap` from the `dependent-map` package to wrangle JSON objects
 - decided to have a go, and also had success
 :::
-
-##
-
-```haskell
-aPost :: DMap PostKey Identity
-aPost =
-  fromList [ PostTitle  :=> Identity "Hello Compose"
-           , PostStatus :=> Identity Publish
-           , PostAuthor :=> Identity 1
-           ]
-```
-
-##
-
-```haskell
-aPost :: Applicative f => DMap PostKey f
-aPost =
-  fromList [ PostTitle ==> "Hello Compose"
-           , PostStatus ==> Publish
-           , PostAuthor ==> 1
-           ]
-```
 
 ##
 
@@ -122,9 +99,8 @@ data DMap (key :: v -> *) (f :: k -> *)
 data PostKey a where
   PostTitle  :: PostKey Text
   PostStatus :: PostKey Status
-  PostAuthor :: PostKey Author
-  -- ...
-  -- more constructors
+  PostAuthor :: PostKey Int
+  ...
 ```
 
 ::: notes
@@ -132,6 +108,34 @@ data PostKey a where
 - `PostKey` is the type.
 - `a` is a type level variable that tracks the type of the value corresponding to each key.
 :::
+
+##
+
+```haskell
+aPost :: DMap PostKey Identity
+aPost =
+  fromList [ PostTitle  :=> Identity "Hello Compose"
+           , PostStatus :=> Identity Publish
+           , PostAuthor :=> Identity 1
+           ]
+```
+
+::: notes
+- sits between a record and `Data.Map`
+- type of values changes with the key, like a record
+- may have 0 or more key,value pairs, like a map
+:::
+
+##
+
+```haskell
+aPost :: Applicative f => DMap PostKey f
+aPost =
+  fromList [ PostTitle ==> "Hello Compose"
+           , PostStatus ==> Publish
+           , PostAuthor ==> 1
+           ]
+```
 
 ##
 

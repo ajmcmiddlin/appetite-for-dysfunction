@@ -64,7 +64,7 @@ data Post =
 - Must specify every field when we might only care about 1.
 :::
 
-## A type for each occassion?
+## A type for each use?
 
 ::: notes
 - Sometimes a good solution to these problems is to have a type for each scenario.

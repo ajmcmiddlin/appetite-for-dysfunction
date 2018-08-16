@@ -1,4 +1,6 @@
-# What and why?
+# Intro
+
+## What and why?
 
 ::: notes
  - Gave a talk on how state machine testing works with the Haskell library `hedgehog` at Lambda Jam

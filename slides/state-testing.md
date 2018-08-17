@@ -8,28 +8,20 @@
 
 ## State machines
 
-## { data-background-image="images/turnstile.png"
-      data-background-color="white"
-      data-background-size="80%"
-      data-background-transition="none"
+## { data-background-image="images/turnstile.svg"
+      class="state-example"
     }
 
-## { data-background-image="images/turnstile-states.png"
-      data-background-color="white"
-      data-background-size="80%"
-      data-background-transition="none"
+## { data-background-image="images/turnstile-states.svg"
+      class="state-example"
     }
 
-## { data-background-image="images/turnstile-initial.png"
-      data-background-color="white"
-      data-background-size="80%"
-      data-background-transition="none"
+## { data-background-image="images/turnstile-initial.svg"
+      class="state-example"
     }
 
-## { data-background-image="images/turnstile-transitions.png"
-      data-background-color="white"
-      data-background-size="80%"
-      data-background-transition="none"
+## { data-background-image="images/turnstile-transitions.svg"
+      class="state-example"
     }
 
 ## State machine testing

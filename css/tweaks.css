@@ -5,6 +5,7 @@
 div.slide-background div.state-example {
     background-size: 80%;
     background-color: #e0d6bc;
+    transition: none;
 }
 
 .reveal pre code {

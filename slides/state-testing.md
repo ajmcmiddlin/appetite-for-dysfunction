@@ -68,7 +68,14 @@
 
 ## WordPress example
 
-##
+## { data-background-image="images/wp-failure-example-inputs.png"
+    class="wp-example"
+    }
+
+## { data-background-image="images/wp-failure-example-diff.png"
+    class="wp-example"
+    }
+ 
 
 
 

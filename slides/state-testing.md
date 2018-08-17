@@ -42,51 +42,42 @@
 
 ## Example
 
-## { data-background-image="images/state-example-01.png"
-      data-background-color="white"
-      data-background-size="80%"
-      data-background-transition="none"
+## { data-background-image="images/state-example-01.svg"
+      class="state-example"
     }
 
-## { data-background-image="images/state-example-02.png"
-      data-background-color="white"
-      data-background-size="80%"
-      data-background-transition="none"
+## { data-background-image="images/state-example-02.svg"
+      class="state-example"
     }
 
-## { data-background-image="images/state-example-03.png"
-      data-background-color="white"
-      data-background-size="80%"
-      data-background-transition="none"
+## { data-background-image="images/state-example-03.svg"
+      class="state-example"
     }
 
-## { data-background-image="images/state-example-04.png"
-      data-background-color="white"
-      data-background-size="80%"
-      data-background-transition="none"
+## { data-background-image="images/state-example-04.svg"
+      class="state-example"
     }
 
-## { data-background-image="images/state-example-05.png"
-      data-background-color="white"
-      data-background-size="80%"
-      data-background-transition="none"
+## { data-background-image="images/state-example-05.svg"
+      class="state-example"
     }
 
-## { data-background-image="images/state-example-fail-01.png"
-      data-background-color="white"
-      data-background-size="80%"
-      data-background-transition="none"
+## { data-background-image="images/state-example-fail-01.svg"
+      class="state-example"
     }
 
-## { data-background-image="images/state-example-fail-02.png"
-      data-background-color="white"
-      data-background-size="80%"
-      data-background-transition="none"
+## { data-background-image="images/state-example-fail-02.svg"
+      class="state-example"
     }
 
-## { data-background-image="images/state-example-fail-03.png"
-      data-background-color="white"
-      data-background-size="80%"
-      data-background-transition="none"
+## { data-background-image="images/state-example-fail-03.svg"
+      class="state-example"
     }
+
+## WordPress example
+
+##
+
+
+
 

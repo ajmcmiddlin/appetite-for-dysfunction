@@ -2,6 +2,11 @@
     border: none;
 }
 
+div.slide-background div.state-example {
+    background-size: 80%;
+    background-color: #e0d6bc;
+}
+
 .reveal pre code {
     max-height: 80%;
 }

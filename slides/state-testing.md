@@ -9,19 +9,19 @@
 ## State machines
 
 ## { data-background-image="images/turnstile.svg"
-      class="state-example"
+      class="turnstile"
     }
 
 ## { data-background-image="images/turnstile-states.svg"
-      class="state-example"
+      class="turnstile"
     }
 
 ## { data-background-image="images/turnstile-initial.svg"
-      class="state-example"
+      class="turnstile"
     }
 
 ## { data-background-image="images/turnstile-transitions.svg"
-      class="state-example"
+      class="turnstile"
     }
 
 ## State machine testing

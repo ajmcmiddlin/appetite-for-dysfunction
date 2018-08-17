@@ -2,9 +2,20 @@
     border: none;
 }
 
+div.slide-background div.turnstile {
+    background-size: 80%;
+    background-color: #daede5;
+    transition: none;
+}
+
 div.slide-background div.state-example {
     background-size: 80%;
     background-color: #e0d6bc;
+    transition: none;
+}
+
+div.slide-background div.wp-example {
+    background-size: contain;
     transition: none;
 }
 

@@ -73,10 +73,6 @@
     }
 
 ## { data-background-image="images/wp-failure-example-diff.png"
-    class="wp-example"
+      data-background-size="90%"
     }
- 
-
-
-
 

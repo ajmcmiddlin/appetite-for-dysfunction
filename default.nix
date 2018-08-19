@@ -33,6 +33,7 @@ in
           $src/slides/nixops.md \
           $src/slides/dmap.md \
           $src/slides/servant.md \
+          $src/slides/putting-it-together.md \
           $src/slides/conclusion.md \
           $src/slides/references.md \
           > slides.md

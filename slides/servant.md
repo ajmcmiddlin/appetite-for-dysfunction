@@ -30,6 +30,8 @@ type Posts =
   :<|> BasicAuth "wordpress" () :> Capture "id" Int :>
        Get '[JSON] PostMap
 
+  :<|> Auth :> Id :> ReqBody '[JSON] PostMap :> Post '[JSON] PostMap
+
   :<|> BasicAuth "wordpress" () :> Capture "id" Int :>
        QueryParam "force" NoForceDelete :>
        Delete '[JSON] DeletedPost

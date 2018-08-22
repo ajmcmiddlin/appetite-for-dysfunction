@@ -108,271 +108,119 @@ newtype GetPost (v :: * -> *) =
 ##
 
 ```haskell
-genPost ::
-  ( MonadGen n
-  , HasPostMaps state
-  )
-  => LocalTime
-  -> state (v :: * -> *)
-  -> n PostMap
-genPost now s = do
-  content <- genAlpha 1 500
-  excerpt' <- T.take <$> Gen.int (Range.linear 1 (T.length content - 1)) <*> pure content
-  status <- Gen.filter (/= Trash) Gen.enumBounded
+cCreatePost now env@Env{..} =
   let
-    genDate =
-      if status == Future
-      then Gen.filter (not . withinADay now) genLocalTime
-      else genLocalTime
-    excerpt = bool content excerpt' (T.null excerpt')
-    genSlug = Gen.filter (not . existsPostWithSlug s) . fmap mkSlug $ genAlpha 1 300
-    gensI = [
-        PostDateGmt :=> genDate
-      , PostSlug :=> genSlug
-      , PostStatus :=> pure status
-      , PostTitle :=> mkCreateR <$> genAlpha 1 30
-      , PostContent :=> pure (mkCreatePR content)
-      , PostAuthor :=> pure (Author 1)
-      , PostExcerpt :=> pure (mkCreatePR excerpt)
-      ]
-  DM.traverseWithKey (const (fmap pure)) $ DM.fromList gensI
-```
 
-::: notes
- - If future, ensure date is not within a day 
-   + WP auto publishes at given timestamp -- don't want it to change
- - No empty slugs --- WP defaults them
-   + can't check equality without implementing slug logic
-:::
 
-##
 
-```haskell
-genPost ::
-  ( MonadGen n
-  , HasPostMaps state
-  )
-  => LocalTime
-  -> state (v :: * -> *)
-  -> n PostMap
-genPost now s = do
-  content <- genAlpha 1 500
-  excerpt' <- T.take <$> Gen.int (Range.linear 1 (T.length content - 1)) <*> pure content
-  status <- Gen.filter (/= Trash) Gen.enumBounded
-  let
-    genDate =
-      if status == Future
-      then Gen.filter (not . withinADay now) genLocalTime
-      else genLocalTime
-    excerpt = bool content excerpt' (T.null excerpt')
-    genSlug = Gen.filter (not . existsPostWithSlug s) . fmap mkSlug $ genAlpha 1 300
-    gensI = [
-        PostDateGmt :=> genDate
-      , PostSlug :=> genSlug
-      , PostStatus :=> pure status
-      , PostTitle :=> mkCreateR <$> genAlpha 1 30
-      , PostContent :=> pure (mkCreatePR content)
-      , PostAuthor :=> pure (Author 1)
-      , PostExcerpt :=> pure (mkCreatePR excerpt)
-      ]
-  DM.traverseWithKey (const (fmap pure)) $ DM.fromList gensI
+
+
+
+
+
+  in
+
+
+
+ 
 ```
 
 ##
 
 ```haskell
-genPost ::
-  ( MonadGen n
-  , HasPostMaps state
-  )
-  => LocalTime
-  -> state (v :: * -> *)
-  -> n PostMap
-genPost now s = do
-  content <- genAlpha 1 500
-  excerpt' <- T.take <$> Gen.int (Range.linear 1 (T.length content - 1)) <*> pure content
-  status <- Gen.filter (/= Trash) Gen.enumBounded
+cCreatePost now env@Env{..} =
   let
-    genDate =
-      if status == Future
-      then Gen.filter (not . withinADay now) genLocalTime
-      else genLocalTime
-    excerpt = bool content excerpt' (T.null excerpt')
-    genSlug = Gen.filter (not . existsPostWithSlug s) . fmap mkSlug $ genAlpha 1 300
-    gensI = [
-        PostDateGmt :=> genDate
-      , PostSlug :=> genSlug
-      , PostStatus :=> pure status
-      , PostTitle :=> mkCreateR <$> genAlpha 1 30
-      , PostContent :=> pure (mkCreatePR content)
-      , PostAuthor :=> pure (Author 1)
-      , PostExcerpt :=> pure (mkCreatePR excerpt)
-      ]
-  DM.traverseWithKey (const (fmap pure)) $ DM.fromList gensI
+    gen = Just . fmap CreatePost . genPost now
+
+
+
+
+
+
+
+  in
+
+
+
+ 
 ```
 
 ##
 
 ```haskell
-genPost ::
-  ( MonadGen n
-  , HasPostMaps state
-  )
-  => LocalTime
-  -> state (v :: * -> *)
-  -> n PostMap
-genPost now s = do
-  content <- genAlpha 1 500
-  excerpt' <- T.take <$> Gen.int (Range.linear 1 (T.length content - 1)) <*> pure content
-  status <- Gen.filter (/= Trash) Gen.enumBounded
+cCreatePost now env@Env{..} =
   let
-    genDate =
-      if status == Future
-      then Gen.filter (not . withinADay now) genLocalTime
-      else genLocalTime
-    excerpt = bool content excerpt' (T.null excerpt')
-    genSlug = Gen.filter (not . existsPostWithSlug s) . fmap mkSlug $ genAlpha 1 300
-    gensI = [
-        PostDateGmt :=> genDate
-      , PostSlug :=> genSlug
-      , PostStatus :=> pure status
-      , PostTitle :=> mkCreateR <$> genAlpha 1 30
-      , PostContent :=> pure (mkCreatePR content)
-      , PostAuthor :=> pure (Author 1)
-      , PostExcerpt :=> pure (mkCreatePR excerpt)
-      ]
-  DM.traverseWithKey (const (fmap pure)) $ DM.fromList gensI
+    gen = Just . fmap CreatePost . genPost now
+    exe (CreatePost pm) = do
+      annotateShow pm
+      annotateShow $ encode pm
+
+
+
+
+  in
+
+
+
+ 
 ```
 
 ##
 
 ```haskell
-genPost ::
-  ( MonadGen n
-  , HasPostMaps state
-  )
-  => LocalTime
-  -> state (v :: * -> *)
-  -> n PostMap
-genPost now s = do
-  content <- genAlpha 1 500
-  excerpt' <- T.take <$> Gen.int (Range.linear 1 (T.length content - 1)) <*> pure content
-  status <- Gen.filter (/= Trash) Gen.enumBounded
+cCreatePost now env@Env{..} =
   let
-    genDate =
-      if status == Future
-      then Gen.filter (not . withinADay now) genLocalTime
-      else genLocalTime
-    excerpt = bool content excerpt' (T.null excerpt')
-    genSlug = Gen.filter (not . existsPostWithSlug s) . fmap mkSlug $ genAlpha 1 300
-    gensI = [
-        PostDateGmt :=> genDate
-      , PostSlug :=> genSlug
-      , PostStatus :=> pure status
-      , PostTitle :=> mkCreateR <$> genAlpha 1 30
-      , PostContent :=> pure (mkCreatePR content)
-      , PostAuthor :=> pure (Author 1)
-      , PostExcerpt :=> pure (mkCreatePR excerpt)
-      ]
-  DM.traverseWithKey (const (fmap pure)) $ DM.fromList gensI
+    gen = Just . fmap CreatePost . genPost now
+    exe (CreatePost pm) = do
+      annotateShow pm
+      annotateShow $ encode pm
+      let create =
+        fmap (runIdentity . (DM.! PostId))
+             (createPost (auth env) pm)
+
+  in
+
+
+
+ 
 ```
 
 ##
 
 ```haskell
-genPost ::
-  ( MonadGen n
-  , HasPostMaps state
-  )
-  => LocalTime
-  -> state (v :: * -> *)
-  -> n PostMap
-genPost now s = do
-  content <- genAlpha 1 500
-  excerpt' <- T.take <$> Gen.int (Range.linear 1 (T.length content - 1)) <*> pure content
-  status <- Gen.filter (/= Trash) Gen.enumBounded
+cCreatePost now env@Env{..} =
   let
-    genDate =
-      if status == Future
-      then Gen.filter (not . withinADay now) genLocalTime
-      else genLocalTime
-    excerpt = bool content excerpt' (T.null excerpt')
-    genSlug = Gen.filter (not . existsPostWithSlug s) . fmap mkSlug $ genAlpha 1 300
-    gensI = [
-        PostDateGmt :=> genDate
-      , PostSlug :=> genSlug
-      , PostStatus :=> pure status
-      , PostTitle :=> mkCreateR <$> genAlpha 1 30
-      , PostContent :=> pure (mkCreatePR content)
-      , PostAuthor :=> pure (Author 1)
-      , PostExcerpt :=> pure (mkCreatePR excerpt)
-      ]
-  DM.traverseWithKey (const (fmap pure)) $ DM.fromList gensI
+    gen = Just . fmap CreatePost . genPost now
+    exe (CreatePost pm) = do
+      annotateShow pm
+      annotateShow $ encode pm
+      let create =
+        fmap (runIdentity . (DM.! PostId))
+             (createPost (auth env) pm)
+      evalEither =<< liftIO (runClientM create servantClient)
+  in
+
+
+
+ 
 ```
 
 ##
 
 ```haskell
-genPost ::
-  ( MonadGen n
-  , HasPostMaps state
-  )
-  => LocalTime
-  -> state (v :: * -> *)
-  -> n PostMap
-genPost now s = do
-  content <- genAlpha 1 500
-  excerpt' <- T.take <$> Gen.int (Range.linear 1 (T.length content - 1)) <*> pure content
-  status <- Gen.filter (/= Trash) Gen.enumBounded
+cCreatePost now env@Env{..} =
   let
-    genDate =
-      if status == Future
-      then Gen.filter (not . withinADay now) genLocalTime
-      else genLocalTime
-    excerpt = bool content excerpt' (T.null excerpt')
-    genSlug = Gen.filter (not . existsPostWithSlug s) . fmap mkSlug $ genAlpha 1 300
-    gensI = [
-        PostDateGmt :=> genDate
-      , PostSlug :=> genSlug
-      , PostStatus :=> pure status
-      , PostTitle :=> mkCreateR <$> genAlpha 1 30
-      , PostContent :=> pure (mkCreatePR content)
-      , PostAuthor :=> pure (Author 1)
-      , PostExcerpt :=> pure (mkCreatePR excerpt)
-      ]
-  DM.traverseWithKey (const (fmap pure)) $ DM.fromList gensI
+    gen = Just . fmap CreatePost . genPost now
+    exe (CreatePost pm) = do
+      annotateShow pm
+      annotateShow $ encode pm
+      let create =
+        fmap (runIdentity . (DM.! PostId))
+             (createPost (auth env) pm)
+      evalEither =<< liftIO (runClientM create servantClient)
+  in
+    Command gen exe [
+      Update $ \s (CreatePost p) o ->
+        posts . at o ?~ genToStatePost now p $ s
+    ]
 ```
-
-##
-
-```haskell
-genPost ::
-  ( MonadGen n
-  , HasPostMaps state
-  )
-  => LocalTime
-  -> state (v :: * -> *)
-  -> n PostMap
-genPost now s = do
-  content <- genAlpha 1 500
-  excerpt' <- T.take <$> Gen.int (Range.linear 1 (T.length content - 1)) <*> pure content
-  status <- Gen.filter (/= Trash) Gen.enumBounded
-  let
-    genDate =
-      if status == Future
-      then Gen.filter (not . withinADay now) genLocalTime
-      else genLocalTime
-    excerpt = bool content excerpt' (T.null excerpt')
-    genSlug = Gen.filter (not . existsPostWithSlug s) . fmap mkSlug $ genAlpha 1 300
-    gensI = [
-        PostDateGmt :=> genDate
-      , PostSlug :=> genSlug
-      , PostStatus :=> pure status
-      , PostTitle :=> mkCreateR <$> genAlpha 1 30
-      , PostContent :=> pure (mkCreatePR content)
-      , PostAuthor :=> pure (Author 1)
-      , PostExcerpt :=> pure (mkCreatePR excerpt)
-      ]
-  DM.traverseWithKey (const (fmap pure)) $ DM.fromList gensI
-```
-

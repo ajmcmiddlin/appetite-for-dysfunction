@@ -180,9 +180,9 @@ class GEq f => GCompare (key :: v -> *) where
 ```haskell
 deriveGEq ''PostKey
 deriveGCompare ''PostKey
- 
 ```
 
+<!--
 ##
 
 ```haskell
@@ -367,3 +367,4 @@ deriveFromJSONViaKey n =
                      'parseJSON1
 ```
 
+-->

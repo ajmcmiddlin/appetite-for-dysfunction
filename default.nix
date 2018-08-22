@@ -7,6 +7,8 @@ let
     url = "https://github.com/hakimel/reveal.js.git";
     rev = "65bdccd5807b6dfecad6eb3ea38872436d291e81";
     sha256 = "07460ij4v7l2j0agqd2dsg28gv18bf320rikcbj4pb54k5pr1218";
+    # rev = "3.7.0";
+    # sha256 = "1raqacq2c6rcbqkli1jygw68nqs090zm59zrbdvflk6y1mzk93nd";
   };
 
   local = ./.;

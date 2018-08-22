@@ -52,7 +52,8 @@ type Id = Capture "id" Int
  :<|> getPost
  :<|> createPost
  :<|> updatePost
- :<|> deletePost :<|> deletePostForce ) = client postsAPI
+ :<|> deletePost
+ :<|> deletePostForce ) = client postsAPI
 ```
 
 ## Query parameters
@@ -270,26 +271,5 @@ instance (ToQueryParamKeyValues key f, HasClient api)
     in
       clientWithRoute (Proxy :: Proxy api) $
         DM.foldrWithKey f req dm
-```
-
-##
-
-```haskell
-
-
-
-
-
-  type Client (QueryParamMap key f :> api) =
-    DMap key f -> Client api
-
-
-
-
-
-
-
-
- 
 ```
 

@@ -29,7 +29,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.979899"
-     inkscape:cx="558.7259"
+     inkscape:cx="474.6307"
      inkscape:cy="338.9225"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -72,7 +72,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -83,7 +83,7 @@
      transform="translate(0,-137)">
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:39.77106857px;line-height:24.85691643px;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.9942767"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:39.77106857px;line-height:24.85691643px;font-family:'DejaVu Sans Mono';-inkscape-font-specification:'DejaVu Sans Mono';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.9942767"
        x="49.289875"
        y="202.37135"
        id="text4506"
@@ -93,9 +93,9 @@
          id="tspan4504"
          x="49.289875"
          y="202.37135"
-         style="font-size:26.51404572px;stroke-width:0.9942767">Randomly generate:  <tspan
-   style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'DejaVu Sans Mono';-inkscape-font-specification:'DejaVu Sans Mono'"
-   id="tspan11636">let xs = take 50 (cycle [Coin, Push])</tspan></tspan><tspan
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:26.51404572px;font-family:'DejaVu Sans Mono';-inkscape-font-specification:'DejaVu Sans Mono';stroke-width:0.9942767"><tspan
+   style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif"
+   id="tspan13957">Randomly generate:</tspan> let xs = take 50 (cycle [Coin, Push])</tspan><tspan
          sodipodi:role="line"
          x="49.289875"
          y="230.67198"

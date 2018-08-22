@@ -16,11 +16,10 @@
 
 ## Outline
 
-- Property based testing (refresher)
-- State machine testing (high level)
+- Property based testing
+- State machine testing
 - WordPress
-- NixOps for functional deployments
-- `dependent-map` for messy JSON formats
-- Template haskell to scrap some boilerplate
+- NixOps
+- `dependent-map`
 - `servant` to talk web
 

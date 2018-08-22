@@ -22,37 +22,37 @@ API -> ClientFunctions
 type Posts =
   "posts" :> (
   List
-  :<|> BasicAuth "wordpress" () :> List
+  :<|> Auth :> List
 
-  :<|> BasicAuth "wordpress" () :> ReqBody '[JSON] PostMap :>
+  :<|> Auth :> Id :> Get '[JSON] PostMap
+
+  :<|> Auth :> ReqBody '[JSON] PostMap :>
        Post '[JSON] PostMap
 
-  :<|> BasicAuth "wordpress" () :> Capture "id" Int :>
-       Get '[JSON] PostMap
+  :<|> Auth :> Id :> ReqBody '[JSON] PostMap :>
+       Post '[JSON] PostMap
 
-  :<|> Auth :> Id :> ReqBody '[JSON] PostMap :> Post '[JSON] PostMap
-
-  :<|> BasicAuth "wordpress" () :> Capture "id" Int :>
-       QueryParam "force" NoForceDelete :>
+  :<|> Auth :> Id :> QueryParam "force" NoForceDelete :>
        Delete '[JSON] DeletedPost
-
-  :<|> BasicAuth "wordpress" () :> Capture "id" Int :>
-       QueryParam' "force" ForceDelete :>
+  :<|> Auth :> Id :> QueryParam' "force" ForceDelete :>
        Delete '[JSON] DeletedPost
   )
 
 type List = QueryParamMap ListPostsKey Identity :>
             Get '[JSON] [PostMap]
+type Auth = BasicAuth "wordpress" ()
+type Id = Capture "id" Int
 ```
 
 ##
 
 ```haskell
-(     listPosts :<|> listPostsAuth
+(     listPosts
+ :<|> listPostsAuth
  :<|> getPost
  :<|> createPost
- :<|> deletePost :<|> deletePostForce ) =
-   client postsAPI
+ :<|> updatePost
+ :<|> deletePost :<|> deletePostForce ) = client postsAPI
 ```
 
 ## Query parameters
@@ -152,12 +152,116 @@ instance (KnownSymbol sym, ToHttpApiData a, HasClient api)
 ```haskell
 data QueryParamMap (key :: * -> *) (f :: * -> *)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+```
+
+##
+
+```haskell
+data QueryParamMap (key :: * -> *) (f :: * -> *)
+
+instance (ToQueryParamKeyValues key f, HasClient api)
+      => HasClient (QueryParamMap key f :> api) where
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+```
+
+##
+
+```haskell
+data QueryParamMap (key :: * -> *) (f :: * -> *)
+
 instance (ToQueryParamKeyValues key f, HasClient api)
       => HasClient (QueryParamMap key f :> api) where
 
   type Client (QueryParamMap key f :> api) =
     DMap key f -> Client api
 
+
+
+
+
+
+
+
+
+
+
+
+ 
+```
+
+##
+
+```haskell
+data QueryParamMap (key :: * -> *) (f :: * -> *)
+
+instance (ToQueryParamKeyValues key f, HasClient api)
+      => HasClient (QueryParamMap key f :> api) where
+
+  type Client (QueryParamMap key f :> api) =
+    DMap key f -> Client api
+
+  clientWithRoute :: 
+    Proxy (QueryParamMap key f :> api)
+    -> Req
+    -> Client (QueryParamMap key f :> api)
+
+
+
+
+
+
+
+ 
+```
+
+##
+
+```haskell
+data QueryParamMap (key :: * -> *) (f :: * -> *)
+
+instance (ToQueryParamKeyValues key f, HasClient api)
+      => HasClient (QueryParamMap key f :> api) where
+
+  type Client (QueryParamMap key f :> api) =
+    DMap key f -> Client api
+
+  clientWithRoute :: 
+    Proxy (QueryParamMap key f :> api)
+    -> Req
+    -> Client (QueryParamMap key f :> api)
   clientWithRoute Proxy req dm =
     let
       addPair (k, v) = appendToQueryString k (Just v)

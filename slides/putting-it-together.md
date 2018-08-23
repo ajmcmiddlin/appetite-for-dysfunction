@@ -105,6 +105,8 @@ newtype GetPost (v :: * -> *) =
   deriving (Show)
 ```
 
+## Creating posts
+
 ##
 
 ```haskell
@@ -222,5 +224,35 @@ cCreatePost now env@Env{..} =
     Command gen exe [
       Update $ \s (CreatePost p) o ->
         posts . at o ?~ genToStatePost now p $ s
+    ]
+```
+
+## Getting posts
+
+##
+
+```haskell
+cGetPost env@Env{..} =
+  let
+    postId = (s ^. posts . to M.keys & Gen.element)
+    gen s =
+      if s ^. posts & (not . null)
+      then Just $ GetPost <$> (s ^. posts . to M.keys & Gen.element)
+      else Nothing
+    exe (GetPost varId) = do
+      let
+        get = getPost (auth env) (concrete varId)
+      evalEither =<< liftIO (runClientM get servantClient)
+  in
+    Command gen exe [
+      Require $ \s (GetPost varId) ->
+        s ^. posts . at varId & not . null
+    , Ensure $ \_so sn (GetPost varId) p -> do
+        stateMap <- eval $ (sn ^. posts) M.! varId
+        let
+          pState = DM.intersection p stateMap
+        annotateShow stateMap
+        annotateShow p
+        stateMap === pState
     ]
 ```

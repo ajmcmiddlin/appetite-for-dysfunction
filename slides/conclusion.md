@@ -20,3 +20,7 @@
 - Declare your API as a type and get client functions for free.
 - Allows us to extend it's API language as necessary.
 
+##
+
+Go forth and test!
+

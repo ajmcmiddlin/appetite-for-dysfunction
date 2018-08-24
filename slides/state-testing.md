@@ -76,6 +76,10 @@
     class="wp-example"
     }
 
+::: notes
+- note number of shrinks at the top
+:::
+
 ## { data-background-image="images/wp-failure-example-diff.png"
       data-background-size="90%"
     }

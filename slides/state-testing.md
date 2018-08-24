@@ -8,11 +8,13 @@
 
 ## State machines
 
-## { data-background-image="images/turnstile.png"
-
 ## { data-background-image="images/turnstile.svg"
       class="turnstile"
     }
+
+## { data-background-image="images/turnstile.png"
+      data-background-size="contain"
+   }
 
 ## { data-background-image="images/turnstile-states.svg"
       class="turnstile"

@@ -1,5 +1,6 @@
 * Todo
-** TODO Add picture of a turnstile to state machine section
+** DONE Add picture of a turnstile to state machine section
+   CLOSED: [2018-08-24 Fri 16:25]
 ** TODO Change Data61 logo
 ** TODO Change WP diff output
 

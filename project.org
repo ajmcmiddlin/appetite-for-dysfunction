@@ -1,2 +1,5 @@
 * Todo
 ** TODO Add picture of a turnstile to state machine section
+** TODO Change Data61 logo
+** TODO Change WP diff output
+

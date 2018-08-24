@@ -12,6 +12,10 @@
       class="turnstile"
     }
 
+## { data-background-image="images/turnstile.png"
+      data-background-size="contain"
+   }
+
 ## { data-background-image="images/turnstile-states.svg"
       class="turnstile"
     }
@@ -71,6 +75,10 @@
 ## { data-background-image="images/wp-failure-example-inputs.png"
     class="wp-example"
     }
+
+::: notes
+- note number of shrinks at the top
+:::
 
 ## { data-background-image="images/wp-failure-example-diff.png"
       data-background-size="90%"

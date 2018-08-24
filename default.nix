@@ -29,9 +29,9 @@ in
     buildPhase = ''
       cat $src/slides/title.md \
           $src/slides/intro.md \
+          $src/slides/wordpress.md \
           $src/slides/pbt.md \
           $src/slides/state-testing.md \
-          $src/slides/wordpress.md \
           $src/slides/nixops.md \
           $src/slides/dmap.md \
           $src/slides/servant.md \

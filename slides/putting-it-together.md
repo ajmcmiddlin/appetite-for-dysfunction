@@ -4,15 +4,15 @@
 
 ##
 
-```haskell
-type Posts v = Map (Var Int v) PostMap
+<pre><code class="haskell" data-trim data-noescape>
+type Posts v = Map (Var Int v) StatePost
 
-newtype WPState (v :: * -> *) =
+<span class="fragment">newtype WPState (v :: * -> *) =
   WPState
   { _posts :: Posts v
   }
-  deriving (Eq, Show)
-```
+  deriving (Eq, Show)</span>
+</code></pre>
 
 ::: notes
 - Start by looking at state
@@ -110,7 +110,7 @@ newtype GetPost (v :: * -> *) =
 ##
 
 ```haskell
-cCreatePost now env@Env{..} =
+cCreatePost env@Env{..} =
   let
 
 
@@ -130,9 +130,9 @@ cCreatePost now env@Env{..} =
 ##
 
 ```haskell
-cCreatePost now env@Env{..} =
+cCreatePost env@Env{..} =
   let
-    gen = Just . fmap CreatePost . genPost now
+    gen = Just . fmap CreatePost . genPost
 
 
 
@@ -150,9 +150,9 @@ cCreatePost now env@Env{..} =
 ##
 
 ```haskell
-cCreatePost now env@Env{..} =
+cCreatePost env@Env{..} =
   let
-    gen = Just . fmap CreatePost . genPost now
+    gen = Just . fmap CreatePost . genPost
     exe (CreatePost pm) = do
       annotateShow pm
       annotateShow $ encode pm
@@ -170,9 +170,9 @@ cCreatePost now env@Env{..} =
 ##
 
 ```haskell
-cCreatePost now env@Env{..} =
+cCreatePost env@Env{..} =
   let
-    gen = Just . fmap CreatePost . genPost now
+    gen = Just . fmap CreatePost . genPost
     exe (CreatePost pm) = do
       annotateShow pm
       annotateShow $ encode pm
@@ -190,9 +190,9 @@ cCreatePost now env@Env{..} =
 ##
 
 ```haskell
-cCreatePost now env@Env{..} =
+cCreatePost env@Env{..} =
   let
-    gen = Just . fmap CreatePost . genPost now
+    gen = Just . fmap CreatePost . genPost
     exe (CreatePost pm) = do
       annotateShow pm
       annotateShow $ encode pm
@@ -210,9 +210,9 @@ cCreatePost now env@Env{..} =
 ##
 
 ```haskell
-cCreatePost now env@Env{..} =
+cCreatePost env@Env{..} =
   let
-    gen = Just . fmap CreatePost . genPost now
+    gen = Just . fmap CreatePost . genPost
     exe (CreatePost pm) = do
       annotateShow pm
       annotateShow $ encode pm
@@ -223,8 +223,56 @@ cCreatePost now env@Env{..} =
   in
     Command gen exe [
       Update $ \s (CreatePost p) o ->
-        posts . at o ?~ genToStatePost now p $ s
+        posts . at o ?~ StatePost p $ s
     ]
+```
+
+## Updating posts
+
+##
+
+```haskell
+cUpdatePost env@Env{..} =
+  let
+    gen s =
+      (flip UpdatePost <$> genPost s <*>) <$> genId s
+    exe (UpdatePost pId pm) = do
+      annotateShow pm
+      annotateShow $ encode pm
+      let update =
+        fmap (runIdentity . (DM.! PostId))
+             (updatePost (auth env) (concrete pId) pm)
+      evalEither =<< liftIO (runClientM update servantClient)
+  in
+    Command gen exe [
+      Require $ \s (UpdatePost varId _) ->
+        s ^. posts . at varId & not . null
+    , Update $ \s (UpdatePost pId p) _ ->
+        posts . at pId ?~ StatePost p $ s
+    ]
+```
+
+##
+
+```haskell
+
+
+
+
+
+
+
+
+
+
+
+
+
+      Require $ \s (UpdatePost varId _) ->
+        s ^. posts . at varId & not . null
+
+
+ 
 ```
 
 ## Getting posts
@@ -232,13 +280,10 @@ cCreatePost now env@Env{..} =
 ##
 
 ```haskell
-cGetPost env@Env{..} =
+cGetPost now env@Env{..} =
   let
-    postId = (s ^. posts . to M.keys & Gen.element)
     gen s =
-      if s ^. posts & (not . null)
-      then Just $ GetPost <$> (s ^. posts . to M.keys & Gen.element)
-      else Nothing
+      (fmap . fmap) GetPost $ genId s
     exe (GetPost varId) = do
       let
         get = getPost (auth env) (concrete varId)
@@ -249,10 +294,32 @@ cGetPost env@Env{..} =
         s ^. posts . at varId & not . null
     , Ensure $ \_so sn (GetPost varId) p -> do
         stateMap <- eval $ (sn ^. posts) M.! varId
-        let
-          pState = DM.intersection p stateMap
         annotateShow stateMap
         annotateShow p
-        stateMap === pState
+        postsEq now stateMap p
     ]
 ```
+
+##
+
+```haskell
+
+
+
+
+
+
+
+
+
+
+
+
+      Ensure $ \_so sn (GetPost varId) p -> do
+        stateMap <- eval $ (sn ^. posts) M.! varId
+        annotateShow stateMap
+        annotateShow p
+        postsEq now stateMap p
+     
+```
+

@@ -8,6 +8,8 @@
 
 ## State machines
 
+## { data-background-image="images/turnstile.png"
+
 ## { data-background-image="images/turnstile.svg"
       class="turnstile"
     }

@@ -25,9 +25,10 @@
 - REST API using JSON (under specified)
 
 ::: notes
-- In summary, it's a well known, long running project with a messy API.
-- Really prove the point that Haskell's great testing tools aren't just for Haskell projects.
-   + You can write Haskell at work to test stateful systems not written in Haskell, to great effect.
+As I said in the intro:
+ - legacy
+ - doesn't use FP
+ - has a loose API
 :::
 
 

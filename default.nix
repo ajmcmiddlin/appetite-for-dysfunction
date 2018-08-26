@@ -16,6 +16,8 @@ in
   pkgs.stdenv.mkDerivation {
     name = "state-machine-testing";
     src = ./.;
+    preferLocalBuild = true;
+    allowSubstitutes = false;
 
     unpackPhase = ''
       mkdir -p $name/{reveal.js,css,images,js}

@@ -85,12 +85,22 @@ data Post =
 ##
 
 ```haskell
+data Map k v
+```
+
+::: notes
+key and value types same for every element
+:::
+
+##
+
+```haskell
 data DMap (key :: v -> *) (f :: k -> *)
 ```
 
 ::: notes
-- `key` is a type constructor for our keys
-- `f` is a type constructor applied to each value type
+- `key` type takes a parameter that determines the type of its corresponding value
+- `f` is a type constructor that wraps each value
 :::
 
 ##

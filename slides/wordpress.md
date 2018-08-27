@@ -1,7 +1,4 @@
 # WordPress
-
-##
-
 > WordPress is open source software you can use to create a beautiful website, blog, or app.
 
 --- wordpress.org
@@ -26,6 +23,7 @@
 
 ::: notes
 As I said in the intro:
+
  - legacy
  - doesn't use FP
  - has a loose API

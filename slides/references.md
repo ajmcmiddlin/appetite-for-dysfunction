@@ -19,13 +19,13 @@
 ## `DMap`
 
 ::: {.left**
-**`dependent-map`**
+**`dependent-map`**  
 [https://hackage.haskell.org/package/dependent-map](https://hackage.haskell.org/package/dependent-map)
 
-**`dependent-sum`**
+**`dependent-sum`**  
 [https://hackage.haskell.org/package/dependent-sum](https://hackage.haskell.org/package/dependent-sum)
 
-**`dependent-sum-template`**
+**`dependent-sum-template`**  
 [https://hackage.haskell.org/package/dependent-sum-template](https://hackage.haskell.org/package/dependent-sum-template)
 :::
 
@@ -42,7 +42,7 @@
 ## Images
 
 ::: {.left}
-**Turnstile**
+**Turnstile**  
 [https://www.procontrol.hu/en/category/details/id/180145-PayGate_M3E-2_coin_operated_PGM3E_mini_tripod_turnstile_toilet_entry_with_folding_arms](https://www.procontrol.hu/en/category/details/id/180145-PayGate_M3E-2_coin_operated_PGM3E_mini_tripod_turnstile_toilet_entry_with_folding_arms)
 :::
 

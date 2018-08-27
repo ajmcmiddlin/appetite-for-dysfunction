@@ -2,10 +2,10 @@
 
 ## Nix
 
-- Purely functional language for package management.
-- Specify packages as referentially transparent expressions.
-- Huge library of packages (`nixpkgs`).
-- Content-based hashing of all artifacts.
+Purely functional language for package management.
+<!-- - Specify packages as referentially transparent expressions. -->
+<!-- - Huge library of packages (`nixpkgs`). -->
+<!-- - Content-based hashing of all artifacts. -->
 
 ::: notes
 - If any build inputs change, the artifact changes
@@ -32,17 +32,6 @@ A tool for deploying NixOS machines.
 :::
 
 ## WordPress specification
-
-##
-
-```nix
-wpPackage = pkgs.fetchFromGitHub {
-
-
-
-
-};
-```
 
 ##
 

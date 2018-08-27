@@ -53,3 +53,21 @@ propReverse =
     reverse (reverse xs) === xs
 ```
 
+## Shrinking
+
+##
+
+```
+[ 'w','K','E','y','P','z','m','o','i','N','G','I','X','X'
+, 'v','l','q','X','n'
+]
+```
+
+##
+
+```haskell
+['a','b']
+```
+
+
+

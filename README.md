@@ -1,12 +1,21 @@
-# TODO
+# Appetite for dysfunction
 
-- State machine testing example
-- State machine testing diagram
-- NixOps deployment video
-- Fix for having to restart machine on deployment
+This talk aims to do three things:
 
-# dalaing comments
+ 1. Introduce state machine testing.
+ 2. Demonstrate that Haskell and [hedgehog](https://github.com/hedgehogqa/haskell-hedgehog) can be
+    used to test applications that aren't written in Haskell or use functional programming.
+ 3. Introduce some tools and techniques that make testing non-Haskell applications easier.
+ 
+WordPress is used to demonstrate points 2 and 3.
 
-For progression, I'm thinking a cut down version of a few WordPress testing actions and some invariants after the state machine testing recap, and some of the details about how the integration works at the end (after you've described all of the pieces), and then look at the things that you have found
-21:12 If you need to skip the DMap instances to fit that in (except perhaps gcompare), that might be an even trade
-21:13 Book ending the WordPress stuff might help motivate the journey through the middle while still having a satisfying ending
+## Versions
+
+The version you most likely want is the one given at [C◦mp◦se ::
+Melbourne](http://www.composeconference.org/) in 2018. It's tagged as [compose](tree/compose).
+
+An earlier version was given at BFPG. This is considered a rough drat, but may be found at tag [bfpg](tree/bfpg).
+
+## Building
+
+To build the talk, run `nix-build` in the project root. To view the build, open `result/index.html` in your browser.

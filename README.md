@@ -9,6 +9,8 @@ This talk aims to do three things:
  
 WordPress is used to demonstrate points 2 and 3.
 
+Code for the talk may be found at [qfpl/wp-tests](https://github.com/qfpl/wp-tests).
+
 ## Versions
 
 The version you most likely want is the one given at [C◦mp◦se ::

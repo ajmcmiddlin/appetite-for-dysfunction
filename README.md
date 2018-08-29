@@ -15,7 +15,8 @@ The version you most likely want is the one given at [C◦mp◦se ::
 Melbourne](http://www.composeconference.org/) in 2018. It's tagged as
 [compose](https://github.com/qfpl/appetite-for-dysfunction/tree/compose).
 
-An earlier version was given at BFPG. This is considered a rough drat, but may be found at tag
+An earlier version was given at [BFPG](https://www.meetup.com/Brisbane-Functional-Programming-Group).
+This is considered a rough draft, but may be found at tag
 [bfpg](https://github.com/qfpl/appetite-for-dysfunction/tree/bfpg).
 
 ## Building

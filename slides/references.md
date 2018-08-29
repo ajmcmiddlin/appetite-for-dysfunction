@@ -3,8 +3,8 @@
 ## Code
 
 ::: {.left}
-**wp-test**  
-[https://github.com/qfpl/wp-test](https://github.com/qfpl/wp-test)
+**wp-tests**  
+[https://github.com/qfpl/wp-tests](https://github.com/qfpl/wp-tests)
 :::
 
 ## Talks

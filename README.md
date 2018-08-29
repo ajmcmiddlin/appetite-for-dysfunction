@@ -12,9 +12,11 @@ WordPress is used to demonstrate points 2 and 3.
 ## Versions
 
 The version you most likely want is the one given at [C◦mp◦se ::
-Melbourne](http://www.composeconference.org/) in 2018. It's tagged as [compose](tree/compose).
+Melbourne](http://www.composeconference.org/) in 2018. It's tagged as
+[compose](https://github.com/qfpl/appetite-for-dysfunction/tree/compose).
 
-An earlier version was given at BFPG. This is considered a rough drat, but may be found at tag [bfpg](tree/bfpg).
+An earlier version was given at BFPG. This is considered a rough drat, but may be found at tag
+[bfpg](https://github.com/qfpl/appetite-for-dysfunction/tree/bfpg).
 
 ## Building
 
